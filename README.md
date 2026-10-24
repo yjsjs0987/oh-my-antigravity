@@ -1,5 +1,7 @@
 # OMO for Antigravity
 
+**English** | [한국어](README_ko.md)
+
 > **NOTICE — Derivative work.** This repository is a port of [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) v5.1.40 (© YeonGyu-Kim). Skill and agent content is largely copied from the upstream project and modified for Google Antigravity. It is distributed free of charge for non-commercial use under the upstream **Sustainable Use License (SUL-1.0)** — see [LICENSE](./LICENSE) for the full terms. This is a source-available license, not an OSI open-source license.
 
 **Use your OMO (oh-my-openagent) workflows inside Google Antigravity.** The same 32 skills, 11 subagents, curated MCP servers, and safety hooks you had in OpenCode — installed as native Antigravity global customizations with a double-click installer. Your `/slash-command` muscle memory, delegation habits, and read-before-overwrite guardrails all carry over.
