@@ -75,14 +75,115 @@ Fully quit Antigravity (check the system tray for a background icon) and reopen 
 
 That's it — see [Uninstall](#uninstall) for removal and [NOT-PORTED.md](./NOT-PORTED.md) for what was intentionally left out.
 
-## The ulw workflow entry point
+## Usage
 
-`ulw` (ultrawork) is the shared keyword of the OMO workflow family. In this port, a dedicated `ulw` router skill handles the bare keyword and the `/ulw` command:
+Nothing to configure — after install, everything below is available in every Antigravity chat, in every workspace. This section is written for first-time users.
 
-- plan before implementation → `ulw-plan`
-- run a written `.omo/plans` work plan → `ulw-execute`
-- research / deep investigation → `ulw-research`
-- ambiguous → the router asks you which one
+### Skills — call with `/` or just ask
+
+Every skill is a `/<name>` slash command, and each one also triggers **automatically** when your request matches its description. So `/git-master` is explicit, but simply saying "commit these changes" works too.
+
+Copy-paste starters:
+
+```text
+/git-master commit these changes with a conventional message
+/debugging the app crashes on startup — stack trace: <paste it>
+/refactor split this 600-line file into focused modules
+have oracle review my API design before I build it
+/data-scientist analyze sales.csv and show monthly revenue trends
+```
+
+### The 32 skills — what to use when
+
+**Development**
+
+| Skill | Use it when |
+| --- | --- |
+| `ast-grep` | you need to find/rewrite code by syntax shape across many files |
+| `debugging` | something crashes, fails silently, or behaves weirdly |
+| `frontend` | you're building or polishing HTML/CSS/SVG interfaces |
+| `git-master` | any git work: commits, rebase, squash, bisect, blame |
+| `init-deep` | you want an AGENTS.md knowledge base generated for a repo |
+| `lsp-setup` | "go-to-definition doesn't work" — wire up a language server |
+| `programming` | writing Python/Rust/TypeScript/Go the strict, modern way |
+| `refactor` | restructuring or simplifying code safely |
+| `remove-ai-slops` | cleaning up AI-generated code smells with regression tests |
+| `review-work` | gate review before handing work off |
+
+**Research & visual**
+
+| Skill | Use it when |
+| --- | --- |
+| `browser` | a real browser is needed: forms, clicks, JS-rendered pages, screenshots |
+| `coding-agent-sessions` | finding what a past coding-agent session did |
+| `data-scientist` | CSV/parquet/JSON analysis and charts |
+| `ultimate-browsing` | pages that block bots or need archive snapshots |
+| `visual-qa` | checking that a UI actually LOOKS right (light/dark, mobile/desktop) |
+
+**ulw workflow** — see the loop below
+
+| Skill | Use it when |
+| --- | --- |
+| `ulw` | the entry keyword — routes to plan / execute / research |
+| `ulw-plan` | you want a reviewed, step-by-step plan BEFORE any code |
+| `ulw-execute` | you have a plan in `.omo/plans` and want it implemented |
+| `ulw-research` | deep investigation with a cited, QA'd deliverable |
+
+**Team-driven**
+
+| Skill | Use it when |
+| --- | --- |
+| `github-triage` | triaging a pile of GitHub issues/PRs read-only |
+| `hyperplan` | you want 5 adversarial roles attacking a plan from all sides |
+| `pre-publish-review` | nuclear-grade gate before a release |
+| `work-with-pr` | full PR lifecycle: implement → review → merge |
+| `security-research` | vulnerability hunt with exploit proof-of-concepts |
+
+**Maintenance**
+
+| Skill | Use it when |
+| --- | --- |
+| `codex-qa` / `opencode-qa` / `senpi-qa` | QA of the OMO sibling adapters themselves |
+| `get-unpublished-changes` | what changed since the last npm release |
+| `omomomo` | easter egg — try it |
+| `publish` | the npm publish workflow |
+| `remove-deadcode` | deleting unused code with LSP-verified safety |
+| `tech-debt-audit` | a file-cited tech debt report across 9 dimensions |
+
+### Subagents — the specialist bench
+
+The 11 custom subagents are the workers your main agent (or any workflow skill) delegates to. You never call them by hand — just say **who should do what**:
+
+```text
+have oracle review this architecture decision
+fire explore agents to find every place we parse CSV
+ask librarian for the official Playwright docs on tracing
+```
+
+Notable assignments: oracle, metis and momus are the judgment bench (they follow whatever top model you select — e.g. Gemini 4 Argon); sisyphus is the orchestration lead and can be selected as the main agent in the agent picker; prometheus is the planner persona behind the ulw skills.
+
+### MCP servers — automatic superpowers
+
+No action needed. Once installed, the agent can pull **official library docs** (context7), **real-world code examples** (grep.app), **web search** (exa), and **code intelligence** (lsp: diagnostics, go-to-definition, rename, symbols) whenever a task needs them.
+
+### Hooks — automatic guardrails
+
+Also no action needed. The ones you'll notice:
+
+- **write-guard** — refuses to overwrite a file nobody has read in this conversation ("Read the file before overwriting").
+- **keyword-detector** — typing `ulw`, `hyperplan` or `team mode` in a message activates the matching workflow protocol.
+- **stop-continuation** — at session stop, if the active `.omo/plans` file still has unchecked boxes, the agent continues instead of quitting.
+- **session-notify** — a beep when a session starts/finishes. The rest (context/task/tooling injectors) quietly orient the agent.
+
+### The ulw loop — the OMO way of working
+
+The signature workflow: **plan first, then execute, never half-deliver.**
+
+1. Type `ulw` (or describe the task and ask for a plan). The **ulw-plan** skill interviews you, explores the codebase, then writes a decision-complete plan to `.omo/plans/<name>.md` and asks for your approval.
+2. Say **"ulw-execute"** (or just approve). The **ulw-execute** skill runs the plan wave by wave with parallel subagents — every step lands with evidence, and the stop hook keeps the agent going until every checkbox in the plan is `[x]`.
+3. Need research first? `ulw-research` produces a cited, QA'd report before any planning.
+
+The plan file is plain markdown in your workspace — read it, edit it, or throw it away. That's the whole magic.
 
 ## What gets installed (and where)
 
