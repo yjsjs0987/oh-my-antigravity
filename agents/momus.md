@@ -7,7 +7,7 @@ tools:
   - find_by_name
   - list_dir
   - run_command
-model: pro
+model: inherit
 mainAgent: false
 subagent: true
 commandExecutionPolicy: sandbox

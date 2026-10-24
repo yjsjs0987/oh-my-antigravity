@@ -10,7 +10,7 @@ tools:
   - search_web
   - run_command
   - invoke_subagent
-model: pro
+model: inherit
 mainAgent: false
 subagent: true
 commandExecutionPolicy: sandbox

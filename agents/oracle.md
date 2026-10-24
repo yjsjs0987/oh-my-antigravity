@@ -9,7 +9,7 @@ tools:
   - read_url_content
   - search_web
   - run_command
-model: pro
+model: inherit
 mainAgent: false
 subagent: true
 commandExecutionPolicy: sandbox
