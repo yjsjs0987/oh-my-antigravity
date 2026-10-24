@@ -2,7 +2,7 @@
 
 > **NOTICE — Derivative work.** This repository is a port of [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) v5.1.40 (© YeonGyu-Kim). Skill and agent content is largely copied from the upstream project and modified for Google Antigravity. It is distributed free of charge for non-commercial use under the upstream **Sustainable Use License (SUL-1.0)** — see [LICENSE](./LICENSE) for the full terms. This is a source-available license, not an OSI open-source license.
 
-**Use your OMO (oh-my-openagent) workflows inside Google Antigravity.** The same 32 skills, 11 subagents, curated MCP servers, and safety hooks you had in OpenCode — installed as native Antigravity global customizations with a one-line installer. Your `/slash-command` muscle memory, delegation habits, and read-before-overwrite guardrails all carry over.
+**Use your OMO (oh-my-openagent) workflows inside Google Antigravity.** The same 32 skills, 11 subagents, curated MCP servers, and safety hooks you had in OpenCode — installed as native Antigravity global customizations with a double-click installer. Your `/slash-command` muscle memory, delegation habits, and read-before-overwrite guardrails all carry over.
 
 Built for: OMO users switching to Antigravity. The OpenCode-side OMO package is **never modified** — both can run side by side during the transition.
 
@@ -20,21 +20,58 @@ Built for: OMO users switching to Antigravity. The OpenCode-side OMO package is 
 
 **10 of 56** upstream OMO hooks are ported as native Antigravity handlers — everything the current hook contract allows. The remaining 46 are documented with reasons in [NOT-PORTED.md](./NOT-PORTED.md): 24 wait on contract gaps (e.g. PostToolUse output semantics are undefined), 22 are bound to OpenCode runtime internals (session/compaction/TUI). The skill/agent/MCP layer is fully ported.
 
-## Quick start
+## Install — step by step
 
-**One-click (Windows):** double-click `install.cmd` in the repo folder — done.
+### Step 0 — Prerequisites
 
-**Terminal:**
+- **Node.js 20 or newer** — the installer and hook handlers run on it. Download the LTS installer from [nodejs.org](https://nodejs.org), run it, then check in any terminal:
+  ```powershell
+  node --version
+  ```
+- **Google Antigravity** — the desktop App or IDE, installed and signed in.
+
+### Step 1 — Get this repository
+
+Either way works; the folder can live anywhere (for example `C:\Users\<you>\oh-my-antigravity`). **Keep the folder after installing** — it doubles as the uninstall source.
+
+**Option A — with git:**
+```powershell
+git clone https://github.com/yjsjs0987/oh-my-antigravity.git
+cd oh-my-antigravity
+```
+
+**Option B — without git:**
+1. On this GitHub page, click the green **Code** button → **Download ZIP**.
+2. Right-click the downloaded `oh-my-antigravity-main.zip` → **Extract All…** → open the extracted folder.
+
+### Step 2 — Run the installer
+
+Double-click **`install.cmd`** in that folder. (Windows SmartScreen may warn on first run of a downloaded file — click **More info → Run anyway**.) Terminal equivalent:
 
 ```powershell
 node scripts\install.mjs
 ```
 
-Restart Antigravity. Then:
+What happens: 32 skills, 11 agents, 1 rule, and 9 hook handlers are copied into `~\.gemini\config\`, and the MCP/hook registrations are merged into your config JSONs. Your existing `mcp_config.json` / `hooks.json` are **backed up first** as `*.omo-backup-<timestamp>.json` — only our keys are added, everything else is untouched. The installer is idempotent (safe to re-run).
 
-- Type `/git-master`, `/debugging`, `/ulw-plan`, `/security-research` — any skill name works as a slash command.
-- Type `ulw` (the ultrawork entry keyword) — the `ulw` router skill routes you to plan / execute / research.
-- Delegate as usual — the ported subagents are invocable by name.
+Advanced flags (optional, terminal only):
+
+- `--home <dir>` — install into a custom home (used for testing).
+- `--cli` — additionally copy skills into `~\.gemini\antigravity-cli\skills\` for the Antigravity CLI.
+- `--dry-run` — print the install plan (file counts, merge keys) without writing anything.
+- `--no-validate` — skip the automatic structure validation at the end.
+
+### Step 3 — Restart Antigravity
+
+Fully quit Antigravity (check the system tray for a background icon) and reopen it, so the global config under `~\.gemini\config\` is re-read.
+
+### Step 4 — Verify
+
+1. Double-click **`doctor.cmd`** — every line should read `[PASS]` (warnings are okay) and finish with **"Integration looks healthy."**
+2. In an Antigravity chat, type `/git-master` (or any skill name) — the skill should load. Type `ulw` — the router should ask you **plan / execute / research**.
+3. Delegate to a ported subagent by name if you use delegation.
+
+That's it — see [Uninstall](#uninstall) for removal and [NOT-PORTED.md](./NOT-PORTED.md) for what was intentionally left out.
 
 ## The ulw workflow entry point
 
@@ -57,23 +94,6 @@ Restart Antigravity. Then:
 | 9 hook registrations | merged into `~\.gemini\config\hooks.json` |
 
 Existing `mcp_config.json` / `hooks.json` are **backed up as `*.omo-backup-<timestamp>.json` before merging** — only our keys are added, everything else is left untouched. Conflicting keys of yours are preserved; ours are saved under an `omo-<key>` name instead.
-
-## Install
-
-One-click: double-click **`install.cmd`** (or run it from a terminal). Equivalent terminal command:
-
-```powershell
-node scripts\install.mjs
-```
-
-Flags:
-
-- `--home <dir>` — install into a custom home (used for testing).
-- `--cli` — additionally copy skills into `~\.gemini\antigravity-cli\skills\` for the Antigravity CLI.
-- `--dry-run` — print the install plan (file counts, merge keys) without writing anything.
-- `--no-validate` — skip the automatic structure validation at the end.
-
-The installer is idempotent: re-running produces the same tree.
 
 ## Validate
 
