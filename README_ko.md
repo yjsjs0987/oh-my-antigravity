@@ -75,14 +75,115 @@ Antigravity를 **완전히 종료**(시스템 트레이의 백그라운드 아�
 
 끝입니다. 제거는 [제거](#제거)를, 일부러 안 옮긴 것은 [NOT-PORTED.md](./NOT-PORTED.md)를 참고하세요.
 
-## ulw 워크플로 진입점
+## 사용법
 
-`ulw`(ultrawork)는 OMO 워크플로 계열의 공유 진입 키워드입니다. 이 포트에서는 전용 `ulw` 라우터 스킬이 bare 키워드와 `/ulw` 커맨드를 처리합니다:
+설치 후 설정할 것이 없습니다 — 아래 내용 전부가 모든 Antigravity 채팅, 모든 워크스페이스에서 바로 동작합니다. 처음 접하는 분 기준으로 작성했습니다.
 
-- 구현 전 계획 → `ulw-plan`
-- 작성된 `.omo/plans` 작업 계획 실행 → `ulw-execute`
-- 리서치 / 심층 조사 → `ulw-research`
-- 모호하면 → 라우터가 셋 중 무엇인지 물어봅니다
+### 스킬 — `/`로 호출하거나 그냥 말하기
+
+모든 스킬은 `/<이름>` 슬래시 커맨드이며, 요청이 설명과 맞으면 **자동으로** 발동하기도 합니다. `/git-master`가 명시적 방법이고, 그냥 "커밋해줘"라고 말해도 됩니다.
+
+복붙용 시작 예시:
+
+```text
+/git-master 이 변경사항 컨벤셔널 메시지로 커밋해줘
+/debugging 앱이 시작하자마자 크래시 — 스택트레이스: <붙여넣기>
+/refactor 이 600줄 파일을 역할별 모듈로 분리해줘
+oracle 불러서 내 API 설계 리뷰해줘
+/data-scientist sales.csv 분석해서 월별 매출 트렌드 보여줘
+```
+
+### 32개 스킬 — 언제 뭘 쓰나
+
+**개발**
+
+| 스킬 | 이럴 때 |
+| --- | --- |
+| `ast-grep` | 여러 파일에 걸쳐 문법 구조로 코드를 찾거나 일괄 수정할 때 |
+| `debugging` | 크래시, 무음 실패, 이상한 동작이 있을 때 |
+| `frontend` | HTML/CSS/SVG 인터페이스를 만들거나 다듬을 때 |
+| `git-master` | 커밋, rebase, squash, bisect, blame 등 git 작업 전부 |
+| `init-deep` | 저장소에 AGENTS.md 지식베이스를 생성하고 싶을 때 |
+| `lsp-setup` | "정의로 이동이 안 돼요" — 언어 서버 연결이 필요할 때 |
+| `programming` | Python/Rust/TypeScript/Go를 엄격한 모던 방식으로 쓸 때 |
+| `refactor` | 코드를 안전하게 재구성하거나 단순화할 때 |
+| `remove-ai-slops` | AI가 만든 코드 스멜을 회귀 테스트와 함께 제거할 때 |
+| `review-work` | 작업 인도 전 게이트 리뷰가 필요할 때 |
+
+**리서치 & 비주얼**
+
+| 스킬 | 이럴 때 |
+| --- | --- |
+| `browser` | 실제 브라우저가 필요할 때: 폼, 클릭, JS 렌더링 페이지, 스크린샷 |
+| `coding-agent-sessions` | 과거 코딩 에이전트 세션이 뭘 했는지 찾을 때 |
+| `data-scientist` | CSV/parquet/JSON 분석과 차트가 필요할 때 |
+| `ultimate-browsing` | 봇 차단 페이지나 아카이브 스냅샷이 필요할 때 |
+| `visual-qa` | UI가 실제로 '보기 좋은지' 확인할 때 (라이트/다크, 모바일/데스크톱) |
+
+**ulw 워크플로** — 아래 루프 참고
+
+| 스킬 | 이럴 때 |
+| --- | --- |
+| `ulw` | 진입 키워드 — plan / execute / research로 분기 |
+| `ulw-plan` | 코드 한 줄 전에 검토된 단계별 계획이 필요할 때 |
+| `ulw-execute` | `.omo/plans`에 있는 계획을 실행시키고 싶을 때 |
+| `ulw-research` | 인용까지 붙은 검증된 리서치 결과물이 필요할 때 |
+
+**팀형**
+
+| 스킬 | 이럴 때 |
+| --- | --- |
+| `github-triage` | GitHub 이슈/PR을 읽기 전용으로 일괄 분류할 때 |
+| `hyperplan` | 5개 적대 역할이 계획을 사방에서 공격하게 하고 싶을 때 |
+| `pre-publish-review` | 릴리스 전 핵폭탄급 게이트가 필요할 때 |
+| `work-with-pr` | 구현 → 리뷰 → 머지 PR 전체 라이프사이클 |
+| `security-research` | 익스플로이트 PoC가 붙은 취약점 헌팅 |
+
+**유지보수**
+
+| 스킬 | 이럴 때 |
+| --- | --- |
+| `codex-qa` / `opencode-qa` / `senpi-qa` | OMO 형제 어댑터 자체의 QA |
+| `get-unpublished-changes` | 마지막 npm 릴리스 이후 변경사항 확인 |
+| `omomomo` | 이스터에그 — 한번 쳐보세요 |
+| `publish` | npm 게시 워크플로 |
+| `remove-deadcode` | LSP 검증된 안전한 데드코드 삭제 |
+| `tech-debt-audit` | 9개 차원의 파일 근거 기반 기술 부채 감사 |
+
+### 서브에이전트 — 전문가 벤치
+
+커스텀 서브에이전트 11개는 메인 에이전트(또는 워크플로 스킬)가 위임하는 작업자들입니다. 손으로 호출할 필요 없이 **누가 뭘 할지 말하기만** 하면 됩니다:
+
+```text
+oracle 불러서 이 아키텍처 결정 리뷰해줘
+explore 에이전트 여러 개 풀어서 CSV 파싱하는 곳 전부 찾아줘
+librarian한테 Playwright tracing 공식 문서 찾아달라고 해
+```
+
+주요 배정: oracle·metis·momus는 판단 벤치입니다 (선택한 최상위 모델을 따릅니다 — 예: Gemini 4 Argon). sisyphus는 오케스트레이션 리드로 에이전트 피커에서 메인 에이전트로 선택 가능하고, prometheus는 ulw 스킬 뒤의 계획 페르소나입니다.
+
+### MCP 서버 — 자동 슈퍼파워
+
+할 일 없습니다. 설치되면 에이전트가 과제에 필요할 때 **공식 라이브러리 문서**(context7), **실전 코드 예제**(grep.app), **웹 검색**(exa), **코드 인텔리전스**(lsp: 진단, 정의로 이동, 이름변경, 심볼)를 알아서 씁니다.
+
+### 훅 — 자동 가드레일
+
+이것도 할 일 없습니다. 눈에 띄는 것들:
+
+- **write-guard** — 이 대화에서 아무도 안 읽은 파일의 덮어쓰기를 거부합니다 ("Read the file before overwriting").
+- **keyword-detector** — 메시지에 `ulw`, `hyperplan`, `team mode`를 입력하면 대응 워크플로 프로토콜이 활성화됩니다.
+- **stop-continuation** — 세션 종료 시점에 활성 `.omo/plans` 파일에 미체크 박스가 남아 있으면 종료하지 않고 계속합니다.
+- **session-notify** — 세션 시작/종료 시 비프음. 나머지(컨텍스트/작업/도구링 인젝터)는 조용히 에이전트를 오리엔테이션합니다.
+
+### ulw 루프 — OMO식 작업 방법
+
+시그니처 워크플로: **계획 먼저, 그다음 실행, 반쪽 납입은 없다.**
+
+1. `ulw`를 입력(또는 작업을 설명하고 계획 요청). **ulw-plan** 스킬이 인터뷰하고 코드베이스를 탐색한 뒤 검토 완료된 계획을 `.omo/plans/<이름>.md`에 작성하고 승인을 요청합니다.
+2. **"ulw-execute"**라고 말하세요(또는 그냥 승인). **ulw-execute** 스킬이 계획을 웨이브별로 병렬 서브에이전트와 함께 실행 — 모든 단계가 증거와 함께 착지하고, stop 훅이 계획의 체크박스가 전부 `[x]`가 될 때까지 에이전트를 계속 작동시킵니다.
+3. 리서치가 먼저 필요하면? `ulw-research`가 계획 전에 인용까지 붙은 검증된 보고서를 만듭니다.
+
+계획 파일은 워크스페이스의 평범한 마크다운입니다 — 읽고, 고치고, 버려도 됩니다. 마법의 전부입니다.
 
 ## 설치되는 것과 위치
 
@@ -99,6 +200,8 @@ Antigravity를 **완전히 종료**(시스템 트레이의 백그라운드 아�
 
 ## 검증 (Validate)
 
+원클릭: **`validate.cmd`**. 터미널:
+
 ```powershell
 node scripts\validate.mjs
 ```
@@ -107,7 +210,7 @@ node scripts\validate.mjs
 
 ## 진단 (Doctor)
 
-뭔가 이상할 때 **설치된 상태**를 자동 진단합니다:
+뭔가 이상할 때 **설치된 상태**를 자동 진단합니다. 원클릭: **`doctor.cmd`**. 터미널:
 
 ```powershell
 node scripts\doctor.mjs
@@ -117,7 +220,7 @@ node scripts\doctor.mjs
 
 ## 제거 (Uninstall)
 
-저장소 루트에서 한 줄:
+원클릭: **`uninstall.cmd`**. 터미널(저장소 루트에서):
 
 ```powershell
 node scripts\uninstall.mjs          # --dry-run으로 미리보기
