@@ -14,6 +14,16 @@ Payloads use **repo-relative paths** — run the handler tests **from the reposi
 | `stop-continuation-done.json` | `stop-continuation.mjs` | (empty stdout — all boxes checked, exit allowed) |
 | `stop-continuation-noplans.json` | `stop-continuation.mjs` | (empty stdout — no `.omo/plans` under `hooks/fixtures`, exit allowed) |
 | `session-notify-stop.json` | `session-notify.mjs` | (empty stdout, exit code 0 — one beep, never blocks) |
+| `keyword-detector-ulw.json` | `keyword-detector.mjs` | `{"injectSteps":[...]}` — workflow protocol injected for the bare keyword in `transcript-ulw.jsonl` |
+| `keyword-detector-repeat.json` | `keyword-detector.mjs` | (empty stdout — state file marks the keyword already injected; delete `state-dir\` to re-test fresh) |
+| `keyword-detector-none.json` | `keyword-detector.mjs` | (empty stdout — no transcript, fail-open) |
+| `task-reminder-pending.json` | `task-reminder.mjs` | `{"injectSteps":[...]}` — "3 unchecked todo(s)" from `fake-workspace-todo` |
+| `task-reminder-done.json` | `task-reminder.mjs` | (empty stdout — nothing pending) |
+| `ast-grep-provision.json` | `ast-grep-provision.mjs` | `{"injectSteps":[...]}` — one-line availability notice (either branch) |
+| `readme-injector.json` | `readme-injector.mjs` | `{"injectSteps":[...]}` — repo README head (workspace `.`) |
+| `readme-injector-none.json` | `readme-injector.mjs` | (empty stdout — no README in `fake-workspace-done`) |
+| `agents-md-injector.json` | `agents-md-injector.mjs` | `{"injectSteps":[...]}` — `fake-workspace-agents\AGENTS.md` head |
+| `agents-md-injector-none.json` | `agents-md-injector.mjs` | (empty stdout — no AGENTS.md in `fake-workspace-done`) |
 
 ## Notes
 

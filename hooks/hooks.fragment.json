@@ -1,1 +1,36 @@
-{"omo-write-guard": {"PreToolUse": [{"matcher": "write_to_file|replace_file_content|multi_replace_file_content", "hooks": [{"type": "command", "command": "node omo-handlers/write-guard.mjs", "timeout": 10}]}]}, "omo-context-injector": {"SessionStart": [{"type": "command", "command": "node omo-handlers/context-injector.mjs", "timeout": 10}], "PreInvocation": [{"type": "command", "command": "node omo-handlers/context-injector.mjs", "timeout": 10}]}, "omo-session-notify": {"SessionStart": [{"type": "command", "command": "node omo-handlers/session-notify.mjs", "timeout": 10}], "Stop": [{"type": "command", "command": "node omo-handlers/session-notify.mjs", "timeout": 10}]}, "omo-stop-continuation": {"Stop": [{"type": "command", "command": "node omo-handlers/stop-continuation.mjs", "timeout": 10}]}}
+{
+  "omo-write-guard": {
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [{ "type": "command", "command": "node omo-handlers/write-guard.mjs", "timeout": 10 }]
+      }
+    ]
+  },
+  "omo-context-injector": {
+    "SessionStart": [{ "type": "command", "command": "node omo-handlers/context-injector.mjs", "timeout": 10 }],
+    "PreInvocation": [{ "type": "command", "command": "node omo-handlers/context-injector.mjs", "timeout": 10 }]
+  },
+  "omo-session-notify": {
+    "SessionStart": [{ "type": "command", "command": "node omo-handlers/session-notify.mjs", "timeout": 10 }],
+    "Stop": [{ "type": "command", "command": "node omo-handlers/session-notify.mjs", "timeout": 10 }]
+  },
+  "omo-stop-continuation": {
+    "Stop": [{ "type": "command", "command": "node omo-handlers/stop-continuation.mjs", "timeout": 10 }]
+  },
+  "omo-keyword-detector": {
+    "PreInvocation": [{ "type": "command", "command": "node omo-handlers/keyword-detector.mjs", "timeout": 10 }]
+  },
+  "omo-task-reminder": {
+    "PreInvocation": [{ "type": "command", "command": "node omo-handlers/task-reminder.mjs", "timeout": 10 }]
+  },
+  "omo-ast-grep-provision": {
+    "PreInvocation": [{ "type": "command", "command": "node omo-handlers/ast-grep-provision.mjs", "timeout": 10 }]
+  },
+  "omo-readme-injector": {
+    "SessionStart": [{ "type": "command", "command": "node omo-handlers/readme-injector.mjs", "timeout": 10 }]
+  },
+  "omo-agents-md-injector": {
+    "SessionStart": [{ "type": "command", "command": "node omo-handlers/agents-md-injector.mjs", "timeout": 10 }]
+  }
+}
