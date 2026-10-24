@@ -18,7 +18,7 @@
 | background task / `background_output` | `manage_task` | 비동기 태스크 생성·결과 수집 |
 | `skill(name="X")` 호출 | "follow the X skill (globally installed)" 텍스트 지침 | 스킬 이름 텍스트로 재작성 |
 | `todowrite` | "작업 목록을 워크스페이스 마크다운 체크박스로 유지" 절차 지침 | 체크박스 기반 작업 추적 |
-| `LspDiagnostics` / `LspFormat` / `LspGotoDefinition` / `LspFindReferences` | MCP lsp 서버 도구(`mcp-config.fragment.json`에 등록) 또는 `grep_search` fallback | T3 MCP 등록 필요 |
+| `LspDiagnostics` / `LspFormat` / `LspGotoDefinition` / `LspFindReferences` | MCP lsp 서버 도구(`mcp-config.fragment.json`에 등록; lsp 서버가 등록한 실제 도구명: diagnostics, goto_definition, find_references, format, symbols, rename, prepare_rename) 또는 `grep_search` fallback | T3 MCP 등록 필요 |
 | `interactive_bash` | `run_command` | PTY 없음 — 이 제한을 표에 명시 |
 | `team_create` / `team_send_message` / `team_delete` | "N개 역할 `invoke_subagent` 병렬 호출 후 결과 종합" 절차 지침 | 한 행에 3개 도구 모두 |
 | `question` 도구 | 일반 텍스트로 사용자에게 질문 | 대화형 확인 |

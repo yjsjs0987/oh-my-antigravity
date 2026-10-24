@@ -94,7 +94,7 @@ A pass is complete only when all applicable gates are green. Skip gates that are
 |---|---|---|
 | Regression tests | project's test runner | all green |
 | Lint | project's linter | zero errors (warnings OK if pre-existing) |
-| Typecheck | `mcp_diagnostics` on changed files + project type-checker | zero new errors |
+| Typecheck | `lsp MCP 서버의 `diagnostics` 도구` on changed files + project type-checker | zero new errors |
 | Unit/integration tests | project's test runner | all green (pre-existing failures noted, not introduced) |
 | Static/security scan | project's scanner | zero new findings, or `N/A` if not configured |
 
@@ -281,7 +281,7 @@ Per-File Results (each cut shows what replaces it):
 Quality Gates:
   - Regression tests: PASS (12 tests, 0 failed)
   - Lint: PASS
-  - Typecheck (mcp_diagnostics + project): PASS (0 new errors on changed files)
+  - Typecheck (lsp MCP 서버의 `diagnostics` 도구 + project): PASS (0 new errors on changed files)
   - Unit/integration tests: PASS (45 tests, 0 failed)
   - Static/security scan: N/A (not configured)
 
@@ -323,7 +323,7 @@ Final Status: CLEAN | ISSUES FIXED | REQUIRES ATTENTION
 - When a tool call fails, retry with adjusted parameters.
 - Never silently skip a failed tool call.
 - Never claim a gate passed without running it and reading the output.
-- If correctness depends on further inspection, keep using `mcp_diagnostics`, the test runner, and direct file reads until the result is grounded.
+- If correctness depends on further inspection, keep using `lsp MCP 서버의 `diagnostics` 도구`, the test runner, and direct file reads until the result is grounded.
 
 ---
 

@@ -154,17 +154,17 @@ While background agents are running, use direct tools:
 
 \`\`\`typescript
 // Find definition(s)
-mcp_goto_definition(filePath, line, character)  // Where is it defined?
+lsp MCP 서버의 `goto_definition` 도구(filePath, line, character)  // Where is it defined?
 
 // Find ALL usages across workspace
-mcp_find_references(filePath, line, character, includeDeclaration=true)
+lsp MCP 서버의 `find_references` 도구(filePath, line, character, includeDeclaration=true)
 
 // Get file structure
 LspDocumentSymbols(filePath)  // Hierarchical outline
 LspWorkspaceSymbols(filePath, query="[target_symbol]")  // Search by name
 
 // Get current diagnostics
-mcp_diagnostics(filePath)  // Errors, warnings before we start
+lsp MCP 서버의 `diagnostics` 도구(filePath)  // Errors, warnings before we start
 \`\`\`
 
 ### AST-Grep Skill for Pattern Analysis:
@@ -320,7 +320,7 @@ Which approach do you prefer?
 
 ### Verification Checkpoints
 After each refactoring step:
-1. mcp_diagnostics → zero new errors
+1. lsp MCP 서버의 `diagnostics` 도구 → zero new errors
 2. Run test command → all pass
 3. Type check → clean
 
@@ -408,7 +408,7 @@ For EACH refactoring step:
 ### Pre-Step
 1. Mark step todo as \`in_progress\`
 2. Read current file state
-3. Verify mcp_diagnostics is baseline
+3. Verify lsp MCP 서버의 `diagnostics` 도구 is baseline
 
 ### Execute Step
 Use appropriate tool:
@@ -438,7 +438,7 @@ edit(filePath, oldString, newString)
 
 \`\`\`typescript
 // 1. Check diagnostics
-mcp_diagnostics(filePath)  // Must be clean or same as baseline
+lsp MCP 서버의 `diagnostics` 도구(filePath)  // Must be clean or same as baseline
 
 // 2. Run tests
 bash("bun test")  // Or appropriate test command
@@ -518,7 +518,7 @@ bun run build  # or npm run build, etc.
 \`\`\`typescript
 // Check all changed files
 for (file of changedFiles) {
-  mcp_diagnostics(file)  // Must all be clean
+  lsp MCP 서버의 `diagnostics` 도구(file)  // Must all be clean
 }
 \`\`\`
 
@@ -551,7 +551,7 @@ All existing tests pass. No new errors introduced.
 # CRITICAL RULES
 
 ## NEVER DO
-- Skip mcp_diagnostics check after changes
+- Skip lsp MCP 서버의 `diagnostics` 도구 check after changes
 - Proceed with failing tests
 - Make changes without understanding impact
 - Use \`as any\`, \`@ts-ignore\`, \`@ts-expect-error\`
@@ -584,10 +584,10 @@ You already know these tools. Use them intelligently:
 
 ## LSP Tools
 Leverage LSP tools for precision analysis. Key patterns:
-- **Understand before changing**: \`mcp_goto_definition\` to grasp context
-- **Impact analysis**: \`mcp_find_references\` to map all usages before modification
+- **Understand before changing**: \`lsp MCP 서버의 `goto_definition` 도구\` to grasp context
+- **Impact analysis**: \`lsp MCP 서버의 `find_references` 도구\` to map all usages before modification
 - **Safe refactoring**: \`lsp_prepare_rename\` → \`lsp_rename\` for symbol renames
-- **Continuous verification**: \`mcp_diagnostics\` after every change
+- **Continuous verification**: \`lsp MCP 서버의 `diagnostics` 도구\` after every change
 
 ## AST-Grep
 Use \`ast-grep\` skill helper or \`sg\` CLI for structural transformations.
@@ -669,7 +669,7 @@ Record the chosen path in the TodoWrite list.
     {
       "kind": "category",
       "category": "quick",
-      "prompt": "You handle mechanical refactoring steps (LSP rename, extract variable, inline, simple move, signature change). Use LSP tools for correctness. Apply the task description's per-step instructions verbatim — no scope expansion. After edits, run mcp_diagnostics on touched files. Report via invoke_subagent 병렬 호출 후 결과 종합 (팀 리드: summary=<files touched>, body=<lsp status + diff summary>) + team_task_update(status=completed). Never run tests — the external verifier handles that. Never git add, never --continue."
+      "prompt": "You handle mechanical refactoring steps (LSP rename, extract variable, inline, simple move, signature change). Use LSP tools for correctness. Apply the task description's per-step instructions verbatim — no scope expansion. After edits, run lsp MCP 서버의 `diagnostics` 도구 on touched files. Report via invoke_subagent 병렬 호출 후 결과 종합 (팀 리드: summary=<files touched>, body=<lsp status + diff summary>) + team_task_update(status=completed). Never run tests — the external verifier handles that. Never git add, never --continue."
     },
     { "kind": "category", "category": "quick", "prompt": "Same contract as peer quick worker." },
     {
