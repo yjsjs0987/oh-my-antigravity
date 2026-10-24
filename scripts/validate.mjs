@@ -105,7 +105,7 @@ function validateSkills(forbidden) {
   const s = suite('skills');
   const skillsDir = path.join(ROOT, 'skills');
   const dirs = fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
-  if (dirs.length !== 31) s.violations.push(`skills: expected 31 skill directories, found ${dirs.length}`);
+  if (dirs.length !== 32) s.violations.push(`skills: expected 32 skill directories, found ${dirs.length}`);
   for (const dir of dirs) {
     const skillMd = path.join(skillsDir, dir, 'SKILL.md');
     if (!fs.existsSync(skillMd)) { s.violations.push(`skills/${dir}: missing SKILL.md`); continue; }

@@ -23,7 +23,7 @@ node scripts/install.mjs
 
 | 대상 | 경로 | 내용 |
 | --- | --- | --- |
-| 스킬 31종 | `~\.gemini\config\skills\<name>\SKILL.md` | 자동 발견 + `/<name>` 슬래시 커맨드 |
+| 스킬 32종 | `~\.gemini\config\skills\<name>\SKILL.md` | 자동 발견 + `/<name>` 슬래시 커맨드 |
 | 에이전트 11종 | `~\.gemini\config\agents\<name>.md` | custom subagent로 등록 |
 | 룰 1건 | `~\.gemini\config\rules\omo-port.md` | 설치된 스킬 선호 안내 |
 | 핸들러 4종 | `~\.gemini\config\omo-handlers\*.mjs` | 훅 실행체 |
@@ -42,7 +42,7 @@ node scripts/install.mjs
 ```powershell
 node scripts\validate.mjs   # 구조 검증 (exit 0 = green)
 ```
-제거는 수동: 설치된 31개 스킬 디렉토리, 11개 에이전트 파일, `rules\omo-port.md`, `omo-handlers\`, `hooks.json`의 `omo-*` 4키, `mcp_config.json`의 5키(또는 백업 복원). 전체 절차는 README.md 참고.
+제거는 수동: 설치된 32개 스킬 디렉토리, 11개 에이전트 파일, `rules\omo-port.md`, `omo-handlers\`, `hooks.json`의 `omo-*` 4키, `mcp_config.json`의 5키(또는 백업 복원). 전체 절차는 README.md 참고.
 
 ### 사용 방법
 - **스킬:** Antigravity가 자동 발견 — 본문 키워드로 발동하거나 `/<이름>`으로 수동 호출 (예: `/git-master`, `/debugging`, `/ulw-plan`)
@@ -55,7 +55,7 @@ node scripts\validate.mjs   # 구조 검증 (exit 0 = green)
 
 ## 2. 포함된 기능 전수 목록
 
-### 스킬 31종
+### 스킬 32종
 
 **개발 (10)**
 | 스킬 | 용도 | `/커맨드` |
@@ -82,9 +82,10 @@ node scripts\validate.mjs   # 구조 검증 (exit 0 = green)
 
 각 SKILL.md 말미에 "## External requirements" 절이 있어 필요 런타임(Node/Python/Playwright 등)과 실행법을 안내합니다.
 
-**워크플로 (3)**
+**워크플로 (4)** — bare `ulw`/`/ulw` 진입 라우터 포함 (OMO 원본의 keyword-detector 훅 라우팅을 스킬로 근사)
 | 스킬 | 용도 |
 | --- | --- |
+| ulw | 진입 라우터 — bare `ulw`/`/ulw`를 plan/execute/research로 분기 (모호하면 질문) |
 | ulw-plan | 탐색 선행 계획 수립 (ground→route→interview→gate→plan + 승인 게이트, scaffold 번들 포함) |
 | ulw-execute | 작성된 계획을 웨이브별 병렬 서브에이전트로 실행 (체크박스·증거·멱등) |
 | ulw-research | 최대 포화 리서치 (팀 병렬·claim-graph 게이팅·인용 산출물) |
@@ -220,7 +221,7 @@ opencode 도구 → Antigravity 도구 매핑의 단일 진실원. 스킬·에�
 | 게이트 | 결과 | 핵심 |
 | --- | --- | --- |
 | validate.mjs | exit 0 | 6 스위트 PASS (skills/agents/mcp/hooks/rules/not-ported), 경고 0 |
-| 실설치 멱등 | 통과 | 임시 홈에 31스킬·11에이전트·4핸들러 설치, 2회 실행 트리 diff 0 |
+| 실설치 멱등 | 통과 | 임시 홈에 32스킬·11에이전트·4핸들러 설치, 2회 실행 트리 diff 0 |
 | 핸들러 fixture 7종 | 전부 green | deny/allow/injectSteps/continue/empty×2/notify — malformed 입력에도 크래시 없이 fail-open |
 | 위반 주입 4종 | 전부 포착 | description 제거·잘못된 tools("Bash")·이벤트 오타·금지토큰 각각 exit 1 |
 | 최종 F1~F4 | 4/4 APPROVE | evidence 1:1 대조·코드 품질(fail-open·무의존)·실구동 QA·IS-1..7 충족 |
