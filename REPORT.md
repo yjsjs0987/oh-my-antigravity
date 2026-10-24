@@ -26,9 +26,9 @@ node scripts/install.mjs
 | 스킬 32종 | `~\.gemini\config\skills\<name>\SKILL.md` | 자동 발견 + `/<name>` 슬래시 커맨드 |
 | 에이전트 11종 | `~\.gemini\config\agents\<name>.md` | custom subagent로 등록 |
 | 룰 1건 | `~\.gemini\config\rules\omo-port.md` | 설치된 스킬 선호 안내 |
-| 핸들러 4종 | `~\.gemini\config\omo-handlers\*.mjs` | 훅 실행체 |
+| 핸들러 9종 | `~\.gemini\config\omo-handlers\*.mjs` | 훅 실행체 |
 | MCP 등록 | `~\.gemini\config\mcp_config.json` (병합) | 5개 서버 키 |
-| 훅 등록 | `~\.gemini\config\hooks.json` (병합) | 4개 `omo-*` 키 |
+| 훅 등록 | `~\.gemini\config\hooks.json` (병합) | 9개 `omo-*` 키 |
 
 **안전장치:** 기존 `mcp_config.json`/`hooks.json`이 있으면 `*.omo-backup-<타임스탬프>.json`으로 **백업 후 병합**하고, 우리 키만 쓰습니다. 기존 키와 값 충돌 시 원본을 보존하고 우리 것을 `omo-<키>`로 저장합니다. 재실행해도 결과 동일(멱등).
 
@@ -42,13 +42,13 @@ node scripts/install.mjs
 ```powershell
 node scripts\validate.mjs   # 구조 검증 (exit 0 = green)
 ```
-제거는 수동: 설치된 32개 스킬 디렉토리, 11개 에이전트 파일, `rules\omo-port.md`, `omo-handlers\`, `hooks.json`의 `omo-*` 4키, `mcp_config.json`의 5키(또는 백업 복원). 전체 절차는 README.md 참고.
+제거는 스크립트 하나: `node scripts\uninstall.mjs` (저장소 루트에서; `--dry-run` 미리보기 지원). 우리 산출물만 지우고 남의 설정은 건드리지 않으며, JSON 수정 전 백업을 남깁니다. 수동 절차: 설치된 32개 스킬 디렉토리, 11개 에이전트 파일, `rules\omo-port.md`, `omo-handlers\`, `hooks.json`의 `omo-*` 9키, `mcp_config.json`의 5키(또는 백업 복원). 전체 절차는 README.md 참고.
 
 ### 사용 방법
 - **스킬:** Antigravity가 자동 발견 — 본문 키워드로 발동하거나 `/<이름>`으로 수동 호출 (예: `/git-master`, `/debugging`, `/ulw-plan`)
 - **에이전트:** 메인 에이전트가 `invoke_subagent`로 위임 (sisyphus를 기본 에이전트로 지정 시 오케스트레이션 체험과 동일)
 - **MCP 도구:** Antigravity 도구 목록에 자동 노출 (context7 문서 조회, grep_app 코드 검색, websearch, lsp 진단/정의이동/참조검색, omo-git-bash)
-- **훅:** 자동 동작 (아래 4종)
+- **훅:** 자동 동작 (아래 9종)
 - **선택 사항:** `CONTEXT7_API_KEY` / `EXA_API_KEY`를 쓰면 MCP 서버 headers에 직접 추가해 라이트츠 제한 해제 가능 (기본값은 키 없이 동작)
 
 ---
@@ -185,13 +185,26 @@ const MODELS = new Set(['inherit', 'flash', 'pro']);   // ← 여기에 새 값 
 
 lsp·omo-git-bash는 OMO 실제 빌드 산출물(`packages\lsp-tools-mcp\dist\cli.js`, `packages\git-bash-mcp\dist\cli.js`)을 가리킵니다 — **OMO를 삭제하면 이 2개는 작동 중지**됩니다(원본 3종은 원격이라 무관).
 
-### 훅 4종 (omo-* 네임스페이스, 전부 fail-open 설계)
+### 훅 9종 (omo-* 네임스페이스, 전부 fail-open 설계)
 | 훅 | 이벤트 | 동작 |
 | --- | --- | --- |
 | omo-write-guard | PreToolUse | 읽지 않은 파일 덮어쓰기 차단 (`{"decision":"deny"}`); 불확실하면 무조건 허용 |
 | omo-context-injector | SessionStart + PreInvocation | 세션 시작 시 방향 메시지(스킬은 /name, 위임은 포팅 서브에이전트) + 첫 호출 시 스킬 카테고리 리마인더 |
 | omo-session-notify | SessionStart + Stop | 윈도우 비프 1회 (외부 의존 0, 실패해도 간섭 없음) |
 | omo-stop-continuation | Stop | 활성 계획(`.omo\plans\*.md`)에 미완료 `- [ ]` 체크박스가 있으면 `{"decision":"continue"}`로 재개; 무조건 재개 아님 |
+| omo-keyword-detector | PreInvocation | transcript 스캔으로 bare `ulw`/`hyperplan`/`team mode` 감지 → 대응 프로토콜 시스템 메시지 주입 (대화당 키워드 1회 디듀프, 주입 텍스트는 트리거 키워드를 포함하지 않아 재발동 루프 없음) |
+| omo-task-reminder | PreInvocation | 턴 시작 시 최신 계획의 미완료 체크박스·열린 노트팹 문제를 리마인더로 주입 (0개면 조용) |
+| omo-ast-grep-provision | PreInvocation | 턴 시작 시 `sg` 바이너리 가용성 확인 → ast-grep 스킬 사용 가능/불가 안내 1줄 주입 |
+| omo-readme-injector | SessionStart | 워크스페이스 README.md 헤드(4천자) 주입 — 세션 시작 시 프로젝트 오리엔테이션 |
+| omo-agents-md-injector | SessionStart | 워크스페이스 AGENTS.md 헤드 주입 (OMO의 hephaestus 전용 주입을 전 에이전트용으로 일반화) |
+
+### 도구 스크립트 4종
+| 스크립트 | 용도 |
+| --- | --- |
+| `scripts\install.mjs` | 백업-병합 설치기 (`--home`/`--cli`/`--dry-run`/`--no-validate`) |
+| `scripts\validate.mjs` | 저장소 구조 검증 (위반 exit 1) |
+| `scripts\uninstall.mjs` | 우리 산출물만 제거 (`--home`/`--dry-run`, JSON 키는 값 일치 시에만 제거, 수정 전 백업) |
+| `scripts\doctor.mjs` | 설치 상태 자동 진단 — 32스킬/11에이전트/룰/핸들러 9종 파싱/MCP·훅 키/stdio 경로 실재/write-guard 라이브 스모크; FAIL 시 exit 1 + 재설치 안내 (`--repo`로 저장소 검증 병행) |
 
 ### 룰 1종
 `rules\omo-port.md` (trigger: model_decision) — 모델이 git/review/debugging/planning/research 작업 시 설치된 스킬을 선호하도록 유도.
@@ -213,7 +226,7 @@ opencode 도구 → Antigravity 도구 매핑의 단일 진실원. 스킬·에�
 ## 4. 미이식 목록 (NOT-PORTED.md)
 
 향후 골라 구현할 백로그 — 요약 금지 원칙으로 전수 나열:
-- **훅 56개 디렉토리**: PORTED 5(→ 핸들러 4종으로 통합), FUTURE-PORTABLE 29(후보 Antigravity 이벤트 명시 — 예: task-reminder→PreInvocation, comment-checker→PostToolUse), RUNTIME-BOUND 22(opencode 세션/compaction/TUI 의존 — 사유 명시)
+- **훅 56개 디렉토리**: PORTED 10(→ 핸들러 9종; 2026-10-24 keyword-detector·task-reminder·ast-grep-sg-provision·directory-readme-injector·hephaestus-agents-md-injector 추가 이식), FUTURE-PORTABLE 24(후보 Antigravity 이벤트 명시 — PostToolUse 계열은 stdout 의미 미정의로 계약상 보류), RUNTIME-BOUND 22(opencode 세션/compaction/TUI 의존 — 사유 명시)
 - **비훅 10개 섹션**: TUI, config 스키마 시스템, 모델 변형 시스템, bin 5종+CLI 인스톨러, postinstall, team-mode 메일박스, 세션/compaction/monitor 시스템, 40개 workspace packages
 
 ## 5. 검증 결과 (모두 실제 실행)

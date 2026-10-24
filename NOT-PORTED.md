@@ -20,7 +20,7 @@ Antigravity 이벤트 6종: `SessionStart, PreToolUse, PostToolUse, PreInvocatio
 | --- | --- | --- | --- | --- |
 | agent-usage-reminder | 도구 실행 후 에이전트 사용 알림 | FUTURE-PORTABLE | opencode 전용 `tool.execute.after` 이벤트에 의존, Antigravity PostToolUse로 재매핑 가능 | PostToolUse |
 | anthropic-context-window-limit-recovery | Anthropic 컨텍스트 윈도우 한계 복구/요약 | RUNTIME-BOUND | opencode 세션/컴팩션/토큰 제한 상태 저장소에 강결합 | — (opencode compaction API 전용) |
-| ast-grep-sg-provision | ast-grep-sg 도구 프로비저닝 | FUTURE-PORTABLE | 도구 설치/준비는 세션 시작 시 한 번 수행 | PreInvocation |
+| ast-grep-sg-provision | ast-grep-sg 도구 프로비저닝 | PORTED | omo-ast-grep-provision (PreInvocation — sg 가용성 확인 후 안내 주입) | 주입 완료 |
 | atlas | 아틀라스 오케스트레이터 세션/계획 추적 | RUNTIME-BOUND | boulder/ralph 연속 시스템과 opencode 세션 상태에 강결합 | — (opencode 세션/continuation API 전용) |
 | auto-slash-command | 슬래시 명령어 감지 및 실행 | FUTURE-PORTABLE | 도구 호출 전 명령어 인터셉트 | PreInvocation |
 | auto-update-checker | 자동 업데이트 확인 | FUTURE-PORTABLE | 세션 시작 시 버전 채널 확인 | SessionStart |
@@ -32,15 +32,15 @@ Antigravity 이벤트 6종: `SessionStart, PreToolUse, PostToolUse, PreInvocatio
 | compaction-todo-preserver | 컴팩션 시 할 일 보존 | RUNTIME-BOUND | opencode 컴팩션/세션 상태에 강결합 | — (opencode compaction API 전용) |
 | delegate-task-retry | 위임 작업 재시도 안내 | FUTURE-PORTABLE | 서브에이전트 완료 후 재시도 권고 | PostInvocation |
 | directory-agents-injector | 디렉터리 에이전트 주입 | PORTED | 이미 이식됨 → `omo-context-injector` (SessionStart + PreInvocation) | 이미 이식됨 |
-| directory-readme-injector | 디렉터리 README 주입 | FUTURE-PORTABLE | 세션 시작 시 작업 디렉터리 README 주입 | SessionStart |
+| directory-readme-injector | 디렉터리 README 주입 | PORTED | omo-readme-injector (SessionStart — 워크스페이스 README 헤드 주입) | 주입 완료 |
 | edit-error-recovery | 편집 오류 복구 | FUTURE-PORTABLE | 도구 실행 후 오류 복구 안내 | PostToolUse |
 | fsync-skip-warning | fsync 건너뛰기 경고 | FUTURE-PORTABLE | 도구 실행 후 fsync 미수행 경고 | PostToolUse |
 | goal | 목표/할 일 시스템 | RUNTIME-BOUND | opencode goal 스토어/컨트롤러와 세션 상태에 강결합 | — (opencode goal API 전용) |
 | hashline-read-enhancer | 해시라인 읽기 강화 | FUTURE-PORTABLE | 도구 실행 후 해시라인 강조 | PostToolUse |
-| hephaestus-agents-md-injector | hephaestus agents.md 주입 | FUTURE-PORTABLE | 세션 시작 시 에이전트 마크다운 주입 | SessionStart |
+| hephaestus-agents-md-injector | hephaestus agents.md 주입 | PORTED | omo-agents-md-injector (SessionStart — AGENTS.md 헤드 주입, 전 에이전트용으로 일반화) | 주입 완료 |
 | interactive-bash-session | 대화형 bash 세션(tmux) | RUNTIME-BOUND | tmux/대화형 셸과 opencode TUI 런타임에 강결합 | — (opencode TUI/tmux API 전용) |
 | json-error-recovery | JSON 오류 복구 | FUTURE-PORTABLE | 도구 실행 후 JSON 파싱 오류 복구 | PostToolUse |
-| keyword-detector | 키워드 감지(hyperplan/team/ultrawork) | FUTURE-PORTABLE | 도구 실행 후 키워드 기반 알림 | PostToolUse |
+| keyword-detector | 키워드 감지(hyperplan/team/ultrawork) | PORTED | omo-keyword-detector (PreInvocation — transcript 스캔 후 프로토콜 주입, 대화당 1회 디듀프; team/hyperplan은 라우팅 안내형) | 주입 완료 |
 | legacy-plugin-toast | 레거시 플러그인 마이그레이션 토스트 | RUNTIME-BOUND | opencode 플러그인 진입점 마이그레이션과 토스트 UI에 강결합 | — (opencode 플러그인/토스트 API 전용) |
 | model-fallback | 모델 폴백/재시도 | RUNTIME-BOUND | opencode 런타임 모델 설정/폴백 상태에 강결합 | — (opencode 모델 런타임 API 전용) |
 | monitor-status-injector | 모니터 상태 주입 | RUNTIME-BOUND | opencode 모니터 시스템과 세션 상태에 강결합 | — (opencode monitor API 전용) |
@@ -59,7 +59,7 @@ Antigravity 이벤트 6종: `SessionStart, PreToolUse, PostToolUse, PreInvocatio
 | shared | 공유 유틸리티(컴팩션 모델 리졸버 등) | RUNTIME-BOUND | opencode 엔진 공유 모듈과 세션 유휴 정리에 강결합 | — (opencode 엔진 내부 API 전용) |
 | sisyphus-junior-notepad | sisyphus-junior 노트패드 연동 | FUTURE-PORTABLE | 도구 실행 후 노트패드 상태 갱신 | PostToolUse |
 | stop-continuation-guard | 스톱 연속 가드 | PORTED | 이미 이식됨 → `omo-stop-continuation` (Stop) | 이미 이식됨 |
-| task-reminder | 작업 리마인더 | FUTURE-PORTABLE | 도구 호출 전 작업 알림 | PreInvocation |
+| task-reminder | 작업 리마인더 | PORTED | omo-task-reminder (PreInvocation — 미완료 플랜·노트 리마인더) | 주입 완료 |
 | task-resume-info | 작업 재개 정보 | FUTURE-PORTABLE | 서브에이전트 완료 후 재개 정보 | PostInvocation |
 | tasks-todowrite-disabler | todowrite 비활성화 | FUTURE-PORTABLE | 도구 호출 전 todowrite 사용 제어 | PreInvocation |
 | team-mailbox-injector | 팀 메일박스 주입 | RUNTIME-BOUND | opencode 팀 모드 메일박스와 세션 상태에 강결합 | — (opencode 팀 모드 API 전용) |
@@ -75,7 +75,9 @@ Antigravity 이벤트 6종: `SessionStart, PreToolUse, PostToolUse, PreInvocatio
 | webfetch-redirect-guard | webfetch 리디렉션 가드 | FUTURE-PORTABLE | 도구 실행 후 리디렉션 해결 | PostToolUse |
 | write-existing-file-guard | 기존 파일 쓰기 가드 | PORTED | 이미 이식됨 → `omo-write-guard` (PreToolUse) | 이미 이식됨 |
 
-**합계: 56개 훅 디렉터리 (PORTED 5 / FUTURE-PORTABLE 29 / RUNTIME-BOUND 22)**
+**합계: 56개 훅 디렉터리 (PORTED 10 / FUTURE-PORTABLE 24 / RUNTIME-BOUND 22)**
+
+> 추가 이식 중단 사유(2026-10-24 확정): PostToolUse 계열 13종은 Antigravity 훅 계약상 PostToolUse stdout 의미가 정의되지 않아 주입 불가; no-hephaestus-non-GPT·no-sisyphus-gpt·tasks-todowrite-disabler는 Antigravity의 frontmatter 모델 핀 설계로 무효화; think-mode는 훅 계약에 reasoning 제어가 없음; auto-update-checker는 이 개인 포트에 배포 채널이 없음.
 
 ### Footnote: session-notification (loose files, ported)
 

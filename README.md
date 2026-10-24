@@ -13,8 +13,8 @@ Built for: OMO users switching to Antigravity. The OpenCode-side OMO package is 
 | **32 skills** | dev (10) · research/visual (5) · ulw workflow (4) · team (5) · maintenance (8) — every skill is also a `/<name>` slash command |
 | **11 subagents** | sisyphus (orchestration lead, mainAgent), hephaestus, sisyphus-junior, oracle, librarian, explore, metis, momus, atlas, multimodal-looker, prometheus |
 | **5 MCP servers** | context7 (library docs), grep_app (real-world code search), websearch, lsp (diagnostics/rename/symbols), omo-git-bash |
-| **4 hooks** | omo-write-guard (read before overwrite), omo-context-injector (session orientation), omo-session-notify (beep on start/finish), omo-stop-continuation (keeps the agent going until the plan is done) |
-| **Tooling** | idempotent installer + full structure validator — zero npm dependencies |
+| **9 hooks** | omo-write-guard (read before overwrite), omo-keyword-detector (`ulw`/hyperplan/team keyword protocols), omo-task-reminder (pending-work reminder), omo-ast-grep-provision (tooling check), omo-readme-injector + omo-agents-md-injector (project orientation), omo-context-injector (session orientation), omo-session-notify (beep), omo-stop-continuation (keeps the agent going until the plan is done) |
+| **Tooling** | install / uninstall / doctor / validate — zero npm dependencies |
 
 ## Quick start
 
@@ -44,9 +44,9 @@ Restart Antigravity. Then:
 | 32 skills | `~\.gemini\config\skills\<name>\SKILL.md` |
 | 11 agents | `~\.gemini\config\agents\<name>.md` |
 | 1 rule | `~\.gemini\config\rules\omo-port.md` |
-| 4 hook handlers | `~\.gemini\config\omo-handlers\*.mjs` |
+| 9 hook handlers | `~\.gemini\config\omo-handlers\*.mjs` |
 | 5 MCP registrations | merged into `~\.gemini\config\mcp_config.json` |
-| 4 hook registrations | merged into `~\.gemini\config\hooks.json` |
+| 9 hook registrations | merged into `~\.gemini\config\hooks.json` |
 
 Existing `mcp_config.json` / `hooks.json` are **backed up as `*.omo-backup-<timestamp>.json` before merging** — only our keys are added, everything else is left untouched. Conflicting keys of yours are preserved; ours are saved under an `omo-<key>` name instead.
 
@@ -73,32 +73,27 @@ node scripts\validate.mjs
 
 Zero dependencies. Exits 0 when all suites pass (skills, agents, MCP, hooks, rules, NOT-PORTED row count) and prints a summary table; exits 1 with a violation list otherwise. The installer runs this automatically at the end unless `--no-validate` is passed.
 
-## Uninstall
+## Doctor
 
-There is no uninstall script — remove the ported artifacts manually (or restore from the installer's backups).
-
-**1. Files and directories** (PowerShell, run from the repo root — removes ONLY our artifacts):
+When something feels off, run automatic diagnostics against the **installed** state:
 
 ```powershell
-$cfg = Join-Path $HOME ".gemini\config"
-# our 32 skill directories (names = this repo's skills\ folder)
-Get-ChildItem skills -Directory | ForEach-Object {
-  Remove-Item (Join-Path $cfg "skills\$($_.Name)") -Recurse -Force -ErrorAction SilentlyContinue
-}
-# agents, rule, handlers
-Get-ChildItem agents -Filter *.md | ForEach-Object {
-  Remove-Item (Join-Path $cfg "agents\$($_.Name)") -Force -ErrorAction SilentlyContinue
-}
-Remove-Item (Join-Path $cfg "rules\omo-port.md") -Force -ErrorAction SilentlyContinue
-Remove-Item (Join-Path $cfg "omo-handlers") -Recurse -Force -ErrorAction SilentlyContinue
+node scripts\doctor.mjs
 ```
 
-**2. JSON keys** — open the two config files and delete only our keys:
+Checks: config dir, all 32 skills / 11 agents / rule present, all 9 handlers parse (`node --check`), our MCP keys registered + entry files exist (warns if the OMO package was removed), all 9 `omo-*` hook keys registered, and a live smoke test of the installed write-guard. `[FAIL]` lines exit 1 with a reinstall hint; warnings exit 0. Flags: `--repo` also runs the full structure validator, `--home <dir>` targets a custom home.
 
-- `~\.gemini\config\hooks.json`: remove the 4 `omo-*` keys (`omo-write-guard`, `omo-context-injector`, `omo-session-notify`, `omo-stop-continuation`).
-- `~\.gemini\config\mcp_config.json`: remove our 5 keys (`context7`, `grep_app`, `lsp`, `websearch`, `omo-git-bash` — or their `omo-<key>` conflict copies).
+## Uninstall
 
-**3. Or restore from backup** — the installer saved pre-install copies as `*.omo-backup-<timestamp>.json` next to the originals; replacing the current files with those restores your previous state, then delete the skill/agent/rule/handler files as in step 1.
+One command, from the repo root:
+
+```powershell
+node scripts\uninstall.mjs          # add --dry-run to preview
+```
+
+It removes **only our artifacts** — the 32 skill dirs, 11 agents, the rule, `omo-handlers\`, our `omo-*` keys in `hooks.json`, and our 5 keys (or their `omo-<key>` conflict copies) in `mcp_config.json` — after backing both JSONs up as `*.omo-backup-<timestamp>.json`. Everything else in your config is untouched, and `*.omo-backup-*.json` files are kept.
+
+Manual fallback (if the repo is gone): delete `~\.gemini\config\skills\<our 32 skill dirs>`, `agents\<our 11 .md files>`, `rules\omo-port.md`, `omo-handlers\`; remove the 9 `omo-*` keys from `hooks.json` and our 5 MCP keys from `mcp_config.json` — or restore both from a `*.omo-backup-<timestamp>.json` backup.
 
 ## Not ported
 
