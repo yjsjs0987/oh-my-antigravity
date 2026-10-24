@@ -14,9 +14,17 @@ Built for: OMO users switching to Antigravity. The OpenCode-side OMO package is 
 | **11 subagents** | sisyphus (orchestration lead, mainAgent), hephaestus, sisyphus-junior, oracle, librarian, explore, metis, momus, atlas, multimodal-looker, prometheus |
 | **5 MCP servers** | context7 (library docs), grep_app (real-world code search), websearch, lsp (diagnostics/rename/symbols), omo-git-bash |
 | **9 hooks** | omo-write-guard (read before overwrite), omo-keyword-detector (`ulw`/hyperplan/team keyword protocols), omo-task-reminder (pending-work reminder), omo-ast-grep-provision (tooling check), omo-readme-injector + omo-agents-md-injector (project orientation), omo-context-injector (session orientation), omo-session-notify (beep), omo-stop-continuation (keeps the agent going until the plan is done) |
-| **Tooling** | install / uninstall / doctor / validate — zero npm dependencies |
+| **Tooling** | one-click launchers + install / uninstall / doctor / validate — zero npm dependencies |
+
+## Porting status
+
+**10 of 56** upstream OMO hooks are ported as native Antigravity handlers — everything the current hook contract allows. The remaining 46 are documented with reasons in [NOT-PORTED.md](./NOT-PORTED.md): 24 wait on contract gaps (e.g. PostToolUse output semantics are undefined), 22 are bound to OpenCode runtime internals (session/compaction/TUI). The skill/agent/MCP layer is fully ported.
 
 ## Quick start
+
+**One-click (Windows):** double-click `install.cmd` in the repo folder — done.
+
+**Terminal:**
 
 ```powershell
 node scripts\install.mjs
@@ -52,6 +60,8 @@ Existing `mcp_config.json` / `hooks.json` are **backed up as `*.omo-backup-<time
 
 ## Install
 
+One-click: double-click **`install.cmd`** (or run it from a terminal). Equivalent terminal command:
+
 ```powershell
 node scripts\install.mjs
 ```
@@ -67,6 +77,8 @@ The installer is idempotent: re-running produces the same tree.
 
 ## Validate
 
+One-click: **`validate.cmd`**. Terminal:
+
 ```powershell
 node scripts\validate.mjs
 ```
@@ -75,7 +87,7 @@ Zero dependencies. Exits 0 when all suites pass (skills, agents, MCP, hooks, rul
 
 ## Doctor
 
-When something feels off, run automatic diagnostics against the **installed** state:
+When something feels off, run automatic diagnostics against the **installed** state. One-click: **`doctor.cmd`**. Terminal:
 
 ```powershell
 node scripts\doctor.mjs
@@ -85,7 +97,7 @@ Checks: config dir, all 32 skills / 11 agents / rule present, all 9 handlers par
 
 ## Uninstall
 
-One command, from the repo root:
+One-click: **`uninstall.cmd`**. Terminal (from the repo root):
 
 ```powershell
 node scripts\uninstall.mjs          # add --dry-run to preview

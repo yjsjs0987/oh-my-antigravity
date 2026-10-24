@@ -198,13 +198,14 @@ lsp·omo-git-bash는 OMO 실제 빌드 산출물(`packages\lsp-tools-mcp\dist\cl
 | omo-readme-injector | SessionStart | 워크스페이스 README.md 헤드(4천자) 주입 — 세션 시작 시 프로젝트 오리엔테이션 |
 | omo-agents-md-injector | SessionStart | 워크스페이스 AGENTS.md 헤드 주입 (OMO의 hephaestus 전용 주입을 전 에이전트용으로 일반화) |
 
-### 도구 스크립트 4종
+### 도구 스크립트 4종 + 원클릭 래퍼
 | 스크립트 | 용도 |
 | --- | --- |
 | `scripts\install.mjs` | 백업-병합 설치기 (`--home`/`--cli`/`--dry-run`/`--no-validate`) |
 | `scripts\validate.mjs` | 저장소 구조 검증 (위반 exit 1) |
 | `scripts\uninstall.mjs` | 우리 산출물만 제거 (`--home`/`--dry-run`, JSON 키는 값 일치 시에만 제거, 수정 전 백업) |
-| `scripts\doctor.mjs` | 설치 상태 자동 진단 — 32스킬/11에이전트/룰/핸들러 9종 파싱/MCP·훅 키/stdio 경로 실재/write-guard 라이브 스모크; FAIL 시 exit 1 + 재설치 안내 (`--repo`로 저장소 검증 병행) |
+| 원클릭 래퍼 | 루트의 install.cmd·uninstall.cmd·doctor.cmd·alidate.cmd — 더블클릭으로 실행 (터미널에서는 pause 없이 종료) |
+| scripts\doctor.mjs | 설치 상태 자동 진단 — 32스킬/11에이전트/룰/핸들러 9종 파싱/MCP·훅 키/stdio 경로 실재/write-guard 라이브 스모크; FAIL 시 exit 1 + 재설치 안내 (`--repo`로 저장소 검증 병행) |
 
 ### 룰 1종
 `rules\omo-port.md` (trigger: model_decision) — 모델이 git/review/debugging/planning/research 작업 시 설치된 스킬을 선호하도록 유도.
