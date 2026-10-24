@@ -1,0 +1,1 @@
+{"conversationId":"conv-1","workspacePaths":["C:\\Users\\yjsjs0987\\Desktop\\Projects\\OMO_For_AGY"],"transcriptPath":"C:\\Users\\yjsjs0987\\Desktop\\Projects\\OMO_For_AGY\\hooks\\fixtures\\transcript-sample.jsonl","artifactDirectoryPath":null,"modelName":"test-model","toolCall":{"name":"write_to_file","args":{"path":"hooks/hooks.fragment.json","content":"x"}}}

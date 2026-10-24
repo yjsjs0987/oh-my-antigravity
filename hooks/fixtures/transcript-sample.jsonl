@@ -1,0 +1,2 @@
+{"type":"message","role":"user","text":"hello"}
+{"type":"tool_call","tool":"grep_search","args":{"pattern":"foo"}}
