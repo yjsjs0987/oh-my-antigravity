@@ -3,7 +3,7 @@
     "context7": { "serverUrl": "https://mcp.context7.com/mcp" },
     "grep_app": { "serverUrl": "https://mcp.grep.app" },
     "websearch": { "serverUrl": "https://mcp.exa.ai/mcp?tools=web_search_exa" },
-    "lsp": { "command": "node", "args": ["C:\\Users\\yjsjs0987\\.cache\\opencode\\packages\\oh-my-openagent@latest\\node_modules\\oh-my-openagent\\packages\\lsp-tools-mcp\\dist\\cli.js"] },
-    "omo-git-bash": { "command": "node", "args": ["C:\\Users\\yjsjs0987\\.cache\\opencode\\packages\\oh-my-openagent@latest\\node_modules\\oh-my-openagent\\packages\\git-bash-mcp\\dist\\cli.js"] }
+    "lsp": { "command": "node", "args": ["~/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/packages/lsp-tools-mcp/dist/cli.js"] },
+    "omo-git-bash": { "command": "node", "args": ["~/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/packages/git-bash-mcp/dist/cli.js"] }
   }
 }

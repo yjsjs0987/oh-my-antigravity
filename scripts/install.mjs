@@ -60,6 +60,23 @@ function readJsonIfExists(p) {
   return JSON.parse(fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
 }
 
+// Expand leading `~/` to the real user home so the repo stays machine-portable
+// (no personal absolute paths committed). Uses os.homedir() — NOT the --home
+// install target — because `~` here means the OMO install location, which is
+// machine-constant regardless of where the config is being installed.
+export function expandTilde(value, home = os.homedir()) {
+  if (typeof value === 'string' && (value.startsWith('~/') || value.startsWith('~\\'))) {
+    return path.normalize(path.join(home, value.slice(2)));
+  }
+  if (Array.isArray(value)) return value.map((v) => expandTilde(v, home));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = expandTilde(v, home);
+    return out;
+  }
+  return value;
+}
+
 // Set ONLY our omo-* keys; leave every other existing key untouched.
 export function mergeHooks(existing, fragment) {
   const out = existing ?? {};
@@ -111,7 +128,7 @@ function main() {
   const handlerFiles = fs.readdirSync(path.join(REPO, 'hooks', 'handlers')).filter((f) => f.endsWith('.mjs'));
   const ruleSrc = path.join(REPO, 'rules', 'omo-port.md');
   const hasRule = fs.existsSync(ruleSrc);
-  const mcpFragment = JSON.parse(fs.readFileSync(path.join(REPO, 'mcp', 'mcp-config.fragment.json'), 'utf8'));
+  const mcpFragment = expandTilde(JSON.parse(fs.readFileSync(path.join(REPO, 'mcp', 'mcp-config.fragment.json'), 'utf8')));
   const hooksFragment = JSON.parse(fs.readFileSync(path.join(REPO, 'hooks', 'hooks.fragment.json'), 'utf8'));
 
   if (args.dryRun) {

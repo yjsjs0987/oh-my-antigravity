@@ -3,11 +3,22 @@
 // Zero dependencies. Run: node scripts/validate.mjs  (exit 0 = green, exit 1 = violations)
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OMO_HOOKS_DIR = 'C:\\Users\\yjsjs0987\\.cache\\opencode\\packages\\oh-my-openagent@latest\\node_modules\\oh-my-openagent\\dist\\hooks';
+// Machine-portable resolution of the OMO install location (was a hardcoded
+// personal absolute path; `~`-style relative to the real user home).
+const OMO_HOOKS_DIR = path.join(os.homedir(), '.cache', 'opencode', 'packages', 'oh-my-openagent@latest', 'node_modules', 'oh-my-openagent', 'dist', 'hooks');
+
+// Expand a leading `~/` against the real user home (same rule as install.mjs).
+function expandTildeArg(p) {
+  if (typeof p === 'string' && (p.startsWith('~/') || p.startsWith('~\\'))) {
+    return path.join(os.homedir(), p.slice(2));
+  }
+  return p;
+}
 
 const TOOL_WHITELIST = new Set([
   'view_file', 'write_to_file', 'replace_file_content', 'multi_replace_file_content',
@@ -168,8 +179,9 @@ function validateMcp() {
     }
     if (hasCommand && Array.isArray(entry.args)) {
       for (const arg of entry.args) {
-        if (typeof arg === 'string' && path.isAbsolute(arg) && !fs.existsSync(arg)) {
-          s.violations.push(`mcp/${name}: absolute arg path does not exist: ${arg}`);
+        const resolved = expandTildeArg(arg);
+        if (typeof resolved === 'string' && path.isAbsolute(resolved) && !fs.existsSync(resolved)) {
+          s.violations.push(`mcp/${name}: absolute arg path does not exist: ${resolved}`);
         }
       }
     }
