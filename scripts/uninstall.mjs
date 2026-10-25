@@ -46,7 +46,17 @@ export function expandTilde(value, home = os.homedir()) {
 
 function readJsonIfExists(p) {
   if (!fs.existsSync(p)) return null;
-  return JSON.parse(fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
+  const raw = fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim();
+  // Empty file: nothing configured — nothing of ours to remove from it.
+  if (raw === '') return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    // Unparsable content: a removal tool must not rewrite a file it cannot
+    // understand. Skip it loudly instead.
+    console.warn(`warning: ${path.basename(p)} is not valid JSON (${e.message}) — skipping key removal from this file; remove our keys manually`);
+    return { __parseError: true };
+  }
 }
 
 function removeDirSync(p) {

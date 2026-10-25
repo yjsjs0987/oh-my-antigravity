@@ -33,8 +33,12 @@ function expandTildeArg(p) {
 
 function readJsonIfExists(p) {
   if (!fs.existsSync(p)) return null;
+  const raw = fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim();
+  // Empty file: Antigravity creates these fresh — report as "not configured"
+  // (the callers turn null into a WARN about missing keys), not a parse error.
+  if (raw === '') return null;
   try {
-    return JSON.parse(fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
+    return JSON.parse(raw);
   } catch {
     return { __parseError: true };
   }
@@ -109,7 +113,7 @@ function main() {
   const mcpPath = path.join(config, 'mcp_config.json');
   const mcp = readJsonIfExists(mcpPath);
   if (!mcp) {
-    warn('mcp_config.json missing or unparsable — MCP servers not registered');
+    warn('mcp_config.json missing, empty, or unparsable — MCP servers not registered');
   } else if (mcp.__parseError) {
     fail('mcp_config.json does not parse — fix the JSON (a backup *.omo-backup-*.json may exist)');
   } else {
@@ -131,7 +135,7 @@ function main() {
   const hooksPath = path.join(config, 'hooks.json');
   const hooks = readJsonIfExists(hooksPath);
   if (!hooks) {
-    warn('hooks.json missing or unparsable — hooks not registered');
+    warn('hooks.json missing, empty, or unparsable — hooks not registered');
   } else if (hooks.__parseError) {
     fail('hooks.json does not parse — fix the JSON (a backup *.omo-backup-*.json may exist)');
   } else {

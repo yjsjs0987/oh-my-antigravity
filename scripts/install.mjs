@@ -57,7 +57,20 @@ export function computeTargets(home) {
 function readJsonIfExists(p) {
   if (!fs.existsSync(p)) return null;
   // strip UTF-8 BOM — Windows editors/tools commonly write one
-  return JSON.parse(fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
+  const raw = fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim();
+  // Empty file: Antigravity creates 0-byte mcp_config.json / hooks.json for
+  // users with nothing configured yet — treat as a fresh start, not an error.
+  if (raw === '') return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    // Malformed non-empty content: preserve it in a backup, then start fresh
+    // so the install can proceed. Nothing is lost.
+    const backup = `${p}.omo-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    fs.copyFileSync(p, backup);
+    console.warn(`warning: ${path.basename(p)} is not valid JSON (${e.message}) — original moved aside to ${path.basename(backup)}; starting fresh`);
+    return null;
+  }
 }
 
 // Expand leading `~/` to the real user home so the repo stays machine-portable
