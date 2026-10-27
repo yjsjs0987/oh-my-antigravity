@@ -1,0 +1,1 @@
+{"conversationId": "conv-wg-esc", "workspacePaths": ["."], "transcriptPath": "hooks/fixtures/transcript-escaped-path.jsonl", "artifactDirectoryPath": null, "modelName": "test-model", "toolCall": {"name": "write_to_file", "args": {"path": "hooks\\fixtures\\write-guard-allow.json", "content": "x"}}}

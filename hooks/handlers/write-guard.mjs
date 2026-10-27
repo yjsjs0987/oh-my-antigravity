@@ -35,14 +35,27 @@ function findTargetPath(args) {
   return undefined;
 }
 
+// Every spelling a transcript line may use for the same path. A JSONL
+// transcript stores paths as JSON strings, so Windows backslashes appear
+// JSON-escaped ("C:\\Users\\...") while the parsed payload arg has single
+// ones; the same file may also be recorded with forward slashes or as a
+// resolved absolute path. Matching every spelling only loosens the guard
+// toward allow, which is fail-open safe (never tightens it).
+function pathVariants(p) {
+  const out = new Set();
+  if (typeof p !== "string" || p.trim() === "") return out;
+  out.add(p); // as received (single backslashes / forward slashes)
+  out.add(p.split("\\").join("/")); // forward-slash form
+  out.add(p.split("\\").join("\\\\")); // JSON-escaped backslash form
+  return out;
+}
+
 // Tolerant transcript match: a JSONL line counts as a view_file record for the
-// target path when the line contains both the literal "view_file" and the path
-// string (substring, not exact JSON field matching). This may over-match (e.g.
-// the path mentioned in an unrelated field alongside view_file) — acceptable:
-// over-matching only loosens the guard toward allow, which is fail-open safe.
-// Returns: true (record found), false (readable, no record), null (missing or
-// unreadable transcript -> caller must fail open).
-function transcriptHasViewFile(transcriptPath, targetPath) {
+// target path when the line contains the literal "view_file" and ANY spelling
+// of the raw arg or its resolved absolute path (substring, not exact JSON
+// field matching). Returns: true (record found), false (readable, no record),
+// null (missing or unreadable transcript -> caller must fail open).
+function transcriptHasViewFile(transcriptPath, targetPath, absPath) {
   if (!transcriptPath || typeof transcriptPath !== "string") return null;
   let raw;
   try {
@@ -50,8 +63,12 @@ function transcriptHasViewFile(transcriptPath, targetPath) {
   } catch {
     return null; // unreadable transcript -> fail open
   }
+  const needles = [...pathVariants(targetPath), ...pathVariants(absPath)];
   for (const line of raw.split("\n")) {
-    if (line.includes("view_file") && line.includes(targetPath)) return true;
+    if (!line.includes("view_file")) continue;
+    for (const n of needles) {
+      if (line.includes(n)) return true;
+    }
   }
   return false;
 }
@@ -80,7 +97,7 @@ const abs = isAbsolute(target)
 
 if (!existsSync(abs)) out(ALLOW); // new file -> allow
 
-const seen = transcriptHasViewFile(payload.transcriptPath, target);
+const seen = transcriptHasViewFile(payload.transcriptPath, target, abs);
 if (seen !== false) out(ALLOW); // record found, or transcript missing/unreadable -> fail open
 
 out(DENY);

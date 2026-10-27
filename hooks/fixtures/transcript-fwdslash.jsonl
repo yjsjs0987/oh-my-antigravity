@@ -1,0 +1,2 @@
+{"type":"tool_call","tool":"view_file","args":{"path":"hooks/fixtures/write-guard-allow.json"}}
+{"type":"tool_result","tool":"view_file","ok":true}

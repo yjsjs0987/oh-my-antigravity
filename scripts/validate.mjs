@@ -265,6 +265,19 @@ function validateNotPorted() {
   }
 }
 
+// ── (g) handler fixture gate ────────────────────────────────────────────────
+// scripts/test-handlers.mjs mirrors hooks/fixtures/README.md as an executable
+// check (fixture stdout/exit + fail-open on malformed stdin for every handler).
+function validateHandlerFixtures() {
+  const s = suite('handlers');
+  const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'test-handlers.mjs')], {
+    encoding: 'utf8', timeout: 55000, cwd: ROOT,
+  });
+  if (r.status !== 0) {
+    s.violations.push(`handlers: fixture gate failed:\n${((r.stdout || '') + (r.stderr || '')).trim().slice(0, 2000)}`);
+  }
+}
+
 // ── main ────────────────────────────────────────────────────────────────────
 const { patterns, source } = loadForbiddenPatterns();
 console.log(`Forbidden patterns: ${patterns.length} loaded from ${source}`);
@@ -274,6 +287,7 @@ validateMcp();
 validateHooks();
 validateRules();
 validateNotPorted();
+validateHandlerFixtures();
 
 let failed = false;
 for (const s of suites) {

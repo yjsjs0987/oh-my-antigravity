@@ -9,6 +9,8 @@ Payloads use **repo-relative paths** — run the handler tests **from the reposi
 | --- | --- | --- |
 | `write-guard-deny.json` | `write-guard.mjs` | `{"decision":"deny",...}` (target exists, transcript has no view_file record) |
 | `write-guard-allow.json` | `write-guard.mjs` | `{"decision":"allow"}` (no transcriptPath → fail-open) |
+| `write-guard-allow-escaped.json` | `write-guard.mjs` | `{"decision":"allow"}` (transcript stores the path JSON-escaped with double backslashes, payload arg has single ones — the file WAS read) |
+| `write-guard-allow-fwdslash.json` | `write-guard.mjs` | `{"decision":"allow"}` (transcript records the path with forward slashes, payload arg with backslashes — the file WAS read) |
 | `context-injector-sessionstart.json` | `context-injector.mjs` | `{"injectSteps":[...]}` (SessionStart orientation) |
 | `stop-continuation-continue.json` | `stop-continuation.mjs` | `{"decision":"continue","reason":"3 unchecked todo(s) in active plan"}` |
 | `stop-continuation-done.json` | `stop-continuation.mjs` | (empty stdout — all boxes checked, exit allowed) |
@@ -28,6 +30,7 @@ Payloads use **repo-relative paths** — run the handler tests **from the reposi
 ## Notes
 
 - `transcript-sample.jsonl` is a synthetic 2-line transcript with no `view_file` record — that is what makes the deny fixture deny.
+- The two `write-guard-allow-escaped/fwdslash` fixtures pin the path-form matching fix: a JSONL transcript stores Windows paths JSON-escaped (`\\`) and may record the same file with forward slashes or as a resolved absolute path, while the parsed payload arg has single backslashes — the matcher must accept every spelling (matching more only loosens toward allow, which is fail-open safe). A relative-arg + absolute-transcript variant is not committed because absolute paths are machine-specific; the fix matches the resolved absolute path too.
 - `fake-workspace-todo/` and `fake-workspace-done/` are synthetic workspaces with a single plan file each, so the newest-plan selection is deterministic.
 - Piping plain text (e.g. `Write-Output "not json" | node hooks\handlers\write-guard.mjs`) must always fail open: allow/empty output, exit 0.
 
