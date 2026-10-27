@@ -216,7 +216,7 @@ When something feels off, run automatic diagnostics against the **installed** st
 node scripts\doctor.mjs
 ```
 
-Checks: config dir, all 32 skills / 11 agents / rule present, all 9 handlers parse (`node --check`), our MCP keys registered + entry files exist (warns if the OMO package was removed), all 9 `omo-*` hook keys registered, and a live smoke test of the installed write-guard. `[FAIL]` lines exit 1 with a reinstall hint; warnings exit 0. Flags: `--repo` also runs the full structure validator, `--home <dir>` targets a custom home.
+Checks: config dir, all 32 skills / 11 agents / rule present, all 9 handlers parse (`node --check`), our MCP keys registered + entry files exist (warns if the OMO package was removed), all 9 `omo-*` hook keys registered, and a fixture-replay smoke test of the installed write-guard (this does NOT verify live Antigravity payloads — see HOST-CONTRACT.md for the manual live-verification protocol). `[FAIL]` lines exit 1 with a reinstall hint; warnings exit 0. Flags: `--repo` also runs the full structure validator, `--home <dir>` targets a custom home.
 
 ## Uninstall
 

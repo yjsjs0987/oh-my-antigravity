@@ -216,7 +216,7 @@ node scripts\validate.mjs
 node scripts\doctor.mjs
 ```
 
-검사 항목: 설정 디렉터리, 스킬 32/에이전트 11/룰 존재, 핸들러 9개 파싱(`node --check`), MCP 키 등록 + 진입 파일 실재(OMO 패키지가 삭제됐으면 경고), `omo-*` 훅 키 9개 등록, 설치된 write-guard 라이브 스모크 테스트. `[FAIL]`이 있으면 재설치 안내와 함께 exit 1, 경고만 있으면 exit 0. 플래그: `--repo`로 저장소 구조 검증 병행, `--home <dir>`으로 대상 홈 지정.
+검사 항목: 설정 디렉터리, 스킬 32/에이전트 11/룰 존재, 핸들러 9개 파싱(`node --check`), MCP 키 등록 + 진입 파일 실재(OMO 패키지가 삭제됐으면 경고), `omo-*` 훅 키 9개 등록, 설치된 write-guard fixture 재생 스모크 테스트(실제 Antigravity 페이로드·결정은 검증하지 않음 — 수동 라이브 검증 절차는 HOST-CONTRACT.md 참고). `[FAIL]`이 있으면 재설치 안내와 함께 exit 1, 경고만 있으면 exit 0. 플래그: `--repo`로 저장소 구조 검증 병행, `--home <dir>`으로 대상 홈 지정.
 
 ## 제거 (Uninstall)
 

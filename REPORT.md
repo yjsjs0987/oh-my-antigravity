@@ -240,6 +240,8 @@ opencode 도구 → Antigravity 도구 매핑의 단일 진실원. 스킬·에�
 | 위반 주입 4종 | 전부 포착 | description 제거·잘못된 tools("Bash")·이벤트 오타·금지토큰 각각 exit 1 |
 | 최종 F1~F4 | 4/4 APPROVE | evidence 1:1 대조·코드 품질(fail-open·무의존)·실구동 QA·IS-1..7 충족 |
 
+> **주석 (2026-10-27, 계약 토론 재판정 반영 — 원본 기록은 보존):** 위 표의 수치는 2026-10-24 승인 시점 기준이다. "4핸들러"는 현재 출하 9종의 이전 단계 수치이고, "fixture 7종"은 현재 문서화 17행(hooks/fixtures/README.md)의 이전 수치다. "실구동 QA"는 실제 Antigravity 구동이 아니라 **핸들러 fixture 재생**을 의미했으며, 실기기 QA는 수행되지 않았다(§6.1 Q4 — README.md의 공개 문구와 일치). 현재 상태: 구조 검증(validate.mjs)에 더해 핸들러 fixture 상시 게이트(scripts/test-handlers.mjs)가 추가되었고, 호스트 경계 계약의 미검증 항목은 HOST-CONTRACT.md 원장이 UNKNOWN/ASSUMED로 추적하며 Wave 2 라이브 프로브로만 OBSERVED로 전환된다.
+
 ## 6. 제약사항 / 유의사항
 
 1. **실기기 미검증 (Q4)**: 구조 검증만 수행. Antigravity 실구동 QA 없음 — **첫 실사용 시 직접 확인** 권장 (`/git-master` 등 슬래시 1회 호출, 위임 1회, 훅 동작 확인).

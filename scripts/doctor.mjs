@@ -153,12 +153,25 @@ function main() {
     const payload = fs.readFileSync(smokeFixture, 'utf8').replace(/^\uFEFF/, '');
     const r = spawnSync(process.execPath, [smokeHandler], { input: payload, timeout: 15000, encoding: 'utf8' });
     if (r.status === 0 && (r.stdout || '').includes('"decision":"allow"')) {
-      pass('smoke: installed write-guard answers allow');
+      pass('smoke (fixture replay): installed write-guard answers allow — does NOT verify live Antigravity payloads/decisions');
     } else {
       fail(`smoke: installed write-guard misbehaved (exit=${r.status}, stdout=${(r.stdout || '').trim().slice(0, 80)})`);
     }
   } else {
     warn('smoke: skipped (handler or fixture not found)');
+  }
+
+  // 9b. live-QA disclosure — warn until a real-Antigravity run is recorded in
+  // HOST-CONTRACT.md §3. The marker only counts with an actual ISO date, so
+  // the format template in the doc never satisfies it.
+  let liveVerified = false;
+  try {
+    liveVerified = /^- live-run verified: \d{4}-\d{2}-\d{2}/m.test(
+      fs.readFileSync(path.join(REPO, 'HOST-CONTRACT.md'), 'utf8'),
+    );
+  } catch { /* no HOST-CONTRACT.md (repo removed after install, or pre-Wave-2) */ }
+  if (!liveVerified) {
+    warn('live QA: never executed against a real Antigravity — run the manual protocol in HOST-CONTRACT.md');
   }
 
   // 10. repo validator (optional)
