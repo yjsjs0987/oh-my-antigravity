@@ -38,6 +38,16 @@ const FORBIDDEN_FALLBACK = [
   'LspFindReferences', 'lsp_diagnostics', 'team_create(', 'team_send_message(', 'team_delete(',
 ];
 
+// Co-occurrence rule (MAPPING.md FORBIDDEN section): a multi-line OpenCode
+// task(...) delegation evades the contiguous substring scan (task( and
+// category= end up on separate lines), so flag any file that both opens a
+// task( call form AND carries one of its OpenCode-only keywords. Legit ported
+// invoke_subagent calls never open a task( — `\b` also keeps manage_task(
+// from matching.
+function opencodeTaskCall(text) {
+  return /\btask\s*\(/.test(text) && /\bcategory\s*=|\bsubagent_type\s*=|run_in_background/.test(text);
+}
+
 function read(p) { return fs.readFileSync(p, 'utf8'); }
 
 // Parse frontmatter between the first two --- lines. Returns { data: Map, body, ok }.
@@ -127,6 +137,9 @@ function validateSkills(forbidden) {
         s.violations.push(`skills/${path.relative(skillsDir, file)}: forbidden token "${pat}"`);
       }
     }
+    if (opencodeTaskCall(text)) {
+      s.violations.push(`skills/${path.relative(skillsDir, file)}: OpenCode task() call (co-occurrence: task( + category=/subagent_type=/run_in_background)`);
+    }
   }
 }
 
@@ -137,7 +150,11 @@ function validateAgents() {
   const files = fs.readdirSync(agentsDir).filter((f) => f.endsWith('.md'));
   if (files.length !== 11) s.violations.push(`agents: expected 11 .md files, found ${files.length}`);
   for (const file of files) {
-    const { data, ok } = frontmatter(read(path.join(agentsDir, file)));
+    const text = read(path.join(agentsDir, file));
+    if (opencodeTaskCall(text)) {
+      s.violations.push(`agents/${file}: OpenCode task() call (co-occurrence: task( + category=/subagent_type=/run_in_background)`);
+    }
+    const { data, ok } = frontmatter(text);
     if (!ok) { s.violations.push(`agents/${file}: no frontmatter block`); continue; }
     if (!data.get('name')) s.violations.push(`agents/${file}: frontmatter missing 'name:'`);
     if (!data.get('description')) s.violations.push(`agents/${file}: frontmatter missing 'description:'`);

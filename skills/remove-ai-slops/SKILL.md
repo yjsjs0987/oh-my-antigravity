@@ -162,13 +162,13 @@ Order rule (safest → riskiest): comments → dead code → defensive → dupli
 
 ### Phase 4: Parallel slop removal via `deep-low` agents in batches of 5
 
-Files are processed by `deep-low` category agents with the `$omo:remove-ai-slops` skill loaded, **batched 5 at a time in parallel**. The executable skill name is `remove-ai-slops`. The `deep-low` category gives the agent enough thoroughness to correctly evaluate the 9 categories and respect the KEEP rules without slipping into surface fixes; the 5-wide batch is the sweet spot — more than 5 creates result-merging noise and context contention, fewer wastes parallelism.
+Files are processed by ported deep-worker subagents (`hephaestus`) instructed to follow the `remove-ai-slops` skill, **batched 5 at a time in parallel**. The executable skill name is `remove-ai-slops`. The deep worker gives the agent enough thoroughness to correctly evaluate the 9 categories and respect the KEEP rules without slipping into surface fixes; the 5-wide batch is the sweet spot — more than 5 creates result-merging noise and context contention, fewer wastes parallelism.
 
 **Batching protocol** (strict):
 
 1. Slice the in-scope file list into chunks of up to 5 files.
-2. For each chunk, launch all `task` calls **in a single message**, every one with `run_in_background=true`.
-3. End your turn. Wait for the system to send `<system-reminder>` notifications as each task finishes.
+2. For each chunk, launch all `invoke_subagent` calls **in a single message**, every one as a parallel background delegation (`run_in_background=true`).
+3. End your turn. Wait for each delegation's completion notification before collecting.
 4. Once all 5 in the batch complete, collect each result via `manage_task(task_id=...)`.
 5. Launch the next batch of 5. Repeat until every file is processed.
 6. If total files ≤ 5, launch all in one batch.
@@ -178,8 +178,8 @@ Files are processed by `deep-low` category agents with the `$omo:remove-ai-slops
 **Per-file invocation** (one of the 5 in a batch):
 
 ```
-task(
-  category="deep-low",
+invoke_subagent(
+  agent="hephaestus",
   load_skills=["remove-ai-slops"],
   run_in_background=true,
   description="Slop removal: {filename}",
@@ -205,7 +205,7 @@ For each skipped issue, give reason.
 )
 ```
 
-**Batch failure handling**: a `multi_agent_v1.wait_agent` timeout only means no new mailbox update arrived, not that a `deep-low` agent failed. For long passes, require each child to send `WORKING: <file> - <current phase>` and `BLOCKED: <reason>` only when it cannot progress. Treat a running child as alive. Mark a file for retry only when the child is completed without the deliverable, ack-only after followup, explicitly `BLOCKED:`, or no longer running. Do NOT block the remaining 4 in that batch; collect successful results and retry the failed file once later. If retry also fails, escalate that file under "Issues Found & Fixed" in the final report.
+**Batch failure handling**: a `multi_agent_v1.wait_agent` timeout only means no new mailbox update arrived, not that a deep worker failed. For long passes, require each child to send `WORKING: <file> - <current phase>` and `BLOCKED: <reason>` only when it cannot progress. Treat a running child as alive. Mark a file for retry only when the child is completed without the deliverable, ack-only after followup, explicitly `BLOCKED:`, or no longer running. Do NOT block the remaining 4 in that batch; collect successful results and retry the failed file once later. If retry also fails, escalate that file under "Issues Found & Fixed" in the final report.
 
 ### Phase 5: Verify with quality gates + critical review
 

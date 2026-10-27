@@ -4,7 +4,7 @@ description: "Post-implementation gate review: run manual QA on the real surface
 ---
 ## Codex Harness Tool Compatibility
 
-This skill may include examples copied from the OpenCode harness. In Antigravity, do not call OpenCode-only tools such as `call_omo_agent(...)`, `task(...)`, `manage_task(...)`, or `team_*(...)` literally. Translate those examples per MAPPING.md:
+This skill may include examples copied from the OpenCode harness. In Antigravity, do not call OpenCode-only tools such as `call_omo_agent`, `task`, `manage_task`, or `team_*` literally. Translate those examples per MAPPING.md:
 
 | OpenCode example | Codex tool to use |
 | --- | --- |
@@ -121,9 +121,9 @@ For GOAL, CONSTRAINTS, BACKGROUND - review the full conversation history. The us
 
 ## Phase 1: Manual QA (you run it)
 
-You are the QA lane. Do not delegate hands-on QA to a sub-agent: the orchestrator owns the real-surface proof, exactly as the ulw-loop final gate records `manualQa` under the main session.
+You are the QA lane. Do not delegate hands-on QA to a sub-agent: the orchestrator owns the real-surface proof, exactly as the `ulw-execute` final gate records evidence under the main session.
 
-1. **Reuse first.** If this session already captured real-surface evidence for the FINAL tree (an ultrawork or ulw-loop evidence directory, a `visual-qa` verdict on this same build), consume it as QA rows instead of re-running. A fix committed after a capture stales that capture: re-run the rows it covered.
+1. **Reuse first.** If this session already captured real-surface evidence for the FINAL tree (an ultrawork or `ulw-execute` evidence directory such as `.omo/ulw-execute/`, a `visual-qa` verdict on this same build), consume it as QA rows instead of re-running. A fix committed after a capture stales that capture: re-run the rows it covered.
 2. **Pick the channel that faithfully exercises the surface** and capture the artifact:
    - HTTP: `curl -i` (or an API request context) - status line, headers, body.
    - CLI / TUI: a real pty - drive the command and keep the transcript; for color or layout evidence render through a browser-based terminal, never a `tmux capture-pane` dump.

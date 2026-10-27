@@ -1,11 +1,11 @@
 ---
 name: work-with-pr
-description: "Full PR lifecycle in a fresh task-owned git worktree: implement via the ulw-loop skill with mandatory evidence-bound manual QA → reviewer-readable English PR → verification loop (CI + Cubic, where Cubic is skipped only when its quota is exhausted) → merge by default → worktree cleanup. Decomposes one task into the smallest atomic, independently-mergeable PRs and builds the independent ones concurrently via one worktree per PR driven by parallel invoke_subagent calls. Unbounded loop: any failing gate sends you back to fix-and-re-QA inside that PR's worktree. Use whenever implementation work needs to land as a PR. Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue', 'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow', 'implement end to end', even when user just says 'implement X' if the context implies PR delivery."
+description: "Full PR lifecycle in a fresh task-owned git worktree: implement via the ulw skill with mandatory evidence-bound manual QA → reviewer-readable English PR → verification loop (CI + Cubic, where Cubic is skipped only when its quota is exhausted) → merge by default → worktree cleanup. Decomposes one task into the smallest atomic, independently-mergeable PRs and builds the independent ones concurrently via one worktree per PR driven by parallel invoke_subagent calls. Unbounded loop: any failing gate sends you back to fix-and-re-QA inside that PR's worktree. Use whenever implementation work needs to land as a PR. Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue', 'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow', 'implement end to end', even when user just says 'implement X' if the context implies PR delivery."
 ---
 
 # Work With PR — Full PR Lifecycle
 
-You are executing a complete PR lifecycle: from fresh task-owned worktree setup, through `ulw-loop`-driven implementation with evidence-bound manual QA, PR creation, and an unbounded verification loop until the PR is merged. The loop has two gates — CI and Cubic — and a failing gate sends you back into that PR's worktree to fix and re-QA. You keep cycling until every active gate passes at once.
+You are executing a complete PR lifecycle: from fresh task-owned worktree setup, through `ulw`-driven (plan → execute) implementation with evidence-bound manual QA, PR creation, and an unbounded verification loop until the PR is merged. The loop has two gates — CI and Cubic — and a failing gate sends you back into that PR's worktree to fix and re-QA. You keep cycling until every active gate passes at once.
 
 **The unit of delivery is the smallest PR that compiles, passes, and stands on its own — not "one task, one PR."** A single task routinely splits into several atomic PRs; the lifecycle below describes ONE of them, so apply it to each, and build the independent ones concurrently (Phase 0).
 
@@ -13,7 +13,7 @@ You are executing a complete PR lifecycle: from fresh task-owned worktree setup,
 
 ```
 Phase 0: Setup         → Split into atomic PRs, then branch + worktree per PR (parallel when independent)
-Phase 1: Implement     → Drive the work through the ulw-loop skill:
+Phase 1: Implement     → Drive the work through the ulw skill:
                          evidence-bound manual QA per success criterion, atomic commits
 Phase 2: PR Creation   → Push, create a reviewer-readable English PR targeting dev
 Phase 3: Verify Loop   → Unbounded iteration; a failing gate routes back to Phase 1:
@@ -87,9 +87,9 @@ cd "$WORKTREE_PATH"
 
 ## Phase 1: Implement
 
-Drive all implementation through the `ulw-loop` skill (globally installed — your harness's native ultrawork loop) from inside the worktree. Do not free-hand the work: `ulw-loop` decomposes the brief into goals with binary success criteria, delegates code edits and QA to right-sized subagents, and — the reason it is mandatory here — forces every success criterion to be proven with evidence-bound **manual QA on a real surface**, not just a green test suite.
+Drive all implementation through the `ulw` skill (globally installed — your harness's native ultrawork loop; plan first, then execute) from inside the worktree. Do not free-hand the work: `ulw` decomposes the brief into goals with binary success criteria, delegates code edits and QA to right-sized subagents, and — the reason it is mandatory here — forces every success criterion to be proven with evidence-bound **manual QA on a real surface**, not just a green test suite.
 
-**Manual QA is the gate, not the tests.** This repo's rule is absolute: a change that reaches OpenCode or Codex is not done until you have driven the real harness (tmux / HTTP / browser / GUI — use the manual-QA channel table in the `ulw-loop` skill) AND written the evidence to disk. No evidence file means the QA did not happen, and you may NOT commit or push. "It typechecks" and "`bun test` is green" are NOT QA.
+**Manual QA is the gate, not the tests.** This repo's rule is absolute: a change that reaches OpenCode or Codex is not done until you have driven the real harness (terminal / HTTP / browser / GUI — use the manual-QA channel guidance in the `ulw-execute` skill) AND written the evidence to disk. No evidence file means the QA did not happen, and you may NOT commit or push. "It typechecks" and "`bun test` is green" are NOT QA.
 
 <implementation>
 
@@ -99,7 +99,7 @@ Within each PR, stay minimal: deliver its one slice, add the test, prove it, sto
 
 ### Commit strategy
 
-`ulw-loop` commits through the `git-master` skill (globally installed). Keep commits atomic so that if CI fails on one change you can isolate and fix it without unwinding everything:
+`ulw-execute` commits through the `git-master` skill (globally installed). Keep commits atomic so that if CI fails on one change you can isolate and fix it without unwinding everything:
 
 ```
 3+ files changed  → 2+ commits minimum

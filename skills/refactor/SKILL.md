@@ -713,20 +713,20 @@ While any team task is \`pending | claimed | in_progress\`:
 - Wait for \`<system-reminder>\` or member messages. Avoid tight polling; a single \`team_status\` check is acceptable if no notification arrives within roughly 10 seconds of expected completion.
 - On a worker completion report, immediately dispatch an **external verifier** — verification runs OUTSIDE the team because team-member category routing downcasts to the category worker:
   \`\`\`
-  task(
-    category="deep-high",
+  invoke_subagent(
+    agent="hephaestus",
     load_skills=[],
     run_in_background=true,
     description="verify step <N>",
     prompt=<files touched + verify-spec commands + instruction to return "PASS" or "FAIL:<failing test + specific error + suggested revert hunks>">
   )
   \`\`\`
-  If \`deep\` is unavailable, fall back to \`category="unspecified-high"\`. Do not create a commit checkpoint until the verifier returns PASS.
+  If \`hephaestus\` is unavailable, fall back to \`sisyphus-junior\`. Do not create a commit checkpoint until the verifier returns PASS.
 - On a verifier PASS: make the commit checkpoint for that step (see original 5.3). Proceed.
 - On a verifier FAIL: Lead decides:
   - **Retry with fix hint**: \`team_task_update(status=pending)\` on the original step + \`invoke_subagent 병렬 호출 후 결과 종합 (to=<original member>, summary="retry", body=<specific failure from verifier>)\`. Runtime reassigns.
   - **Escalate**: after three FAIL cycles on the same step, STOP and consult the user with full evidence.
-- On a member UNCLEAR message: re-harvest context via a targeted \`task()\` outside the team, broadcast an updated Intent Card fragment, then reassign.
+- On a member UNCLEAR message: re-harvest context via a targeted \`invoke_subagent\` outside the team, broadcast an updated Intent Card fragment, then reassign.
 
 Proceed to Phase 6 only when every team task is \`completed\` AND every paired verifier task returned PASS.
 
@@ -748,5 +748,5 @@ Append to the 6.6 summary a "Dispatch path" line and, when team path was used, t
 - Do not inline the Intent Card or verify-spec into task descriptions — rely on the broadcasts.
 - Do not recreate the team mid-session.
 - Do not run tests from Lead — the external verifier owns that lane.
-- Do not put \`oracle\` / \`librarian\` / \`deep\` into the team spec — curated read-only agents are team-ineligible, and \`deep\` under category routing downcasts to the category worker. Use them via \`task()\` outside the team when needed.
+- Do not put \`oracle\` / \`librarian\` / \`deep\` into the team spec — curated read-only agents are team-ineligible, and \`deep\` under category routing downcasts to the category worker. Use them via \`invoke_subagent\` outside the team when needed.
 `

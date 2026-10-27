@@ -54,3 +54,5 @@ team_delete(
 ```
 
 `validate.mjs`는 이 패턴들 중 하나라도 일치하면 위반으로 처리하고 exit 1을 반환합니다.
+
+추가 동시출현 규칙 (co-occurrence, 2026-10-27): 멀티라인으로 포맷된 OpenCode `task(...)` 위임 호출(`task(`와 `category=`가 서로 다른 줄에 위치)은 위 substring 스캔을 회피합니다. 따라서 한 파일 안에 `task(` 호출 형태와 OpenCode 전용 키(`category=`, `subagent_type=`, `run_in_background`)가 **동시에** 존재하면 위반으로 처리합니다. 이 규칙은 substring 목록으로 표현할 수 없어 `validate.mjs` 코드로 구현되어 있습니다(스킬·에이전트 전수 스캔). `\b` 전방경계 때문에 `manage_task(` 같은 포팅된 도구 호출은 오탐되지 않습니다.
